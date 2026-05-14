@@ -1,3 +1,4 @@
+
 :root{
   --gold:#D4AF37;--gold-light:#F0D060;--gold-dark:#A08020;
   --deep:#0d1b2a;--cream:#FFF8E7;--text-main:#FFF8E7;--text-muted:#C8A96E;
@@ -102,9 +103,6 @@ body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--t
   border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:14px;
   font-family:'Noto Sans Sinhala',sans-serif;transition:all .2s;}
 .btn-back:hover{border-color:var(--gold);color:var(--gold);}
-.lang-btn{padding:6px 12px;background:transparent;border:1px solid rgba(212,175,55,.25);border-radius:5px;color:var(--text-muted);font-size:12px;cursor:pointer;transition:all .2s;}
-.lang-btn:hover{border-color:var(--gold);color:var(--gold);}
-.lang-btn.active{background:rgba(212,175,55,.18);border-color:var(--gold);color:var(--gold);}
 
 .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 @media(max-width:760px){.admin-grid{grid-template-columns:1fr;}}

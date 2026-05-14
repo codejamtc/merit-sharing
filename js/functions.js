@@ -1,3 +1,4 @@
+
 // Sections that show name only (no merit text) + two-column layout
 const NAME_ONLY_IDS = ['s10','s11','s12'];
 
@@ -43,274 +44,11 @@ let settings = {
   slideManagerEnabled:false,
   slideManagerConfig:[],  // [{label:'Slide 1', sectionIds:['s1','s2']}]
   sectionRowLimits:{},   // {secId: maxNamesPerSlide}
-  currentLang:'si',      // 'si' = Sinhala, 'en' = English
 };
 
 let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
 let localMusicBlobUrl = null;  // kept in memory; not persisted
 const audio = document.getElementById('bgMusic');
-
-// ════════════════════════════════════════════════════════════
-// BILINGUAL SUPPORT (Sinhala / English)
-// ════════════════════════════════════════════════════════════
-const translations = {
-  si: {
-    // Admin header
-    adminTitle: '⚙️ පරිපාලන පුවරව — ප්‍රශංසන අංකය',
-    // Tabs
-    tabData: 'Data & Sections',
-    tabSheets: 'Google Sheets',
-    tabVisibility: 'Section Visibility',
-    tabText: 'Title & Sub-Title',
-    tabSettings: 'Settings',
-    tabSlides: 'Slide Manager',
-    // Buttons
-    btnBack: '← Back to Display',
-    btnExport: '⬇️ Export Data (CSV)',
-    btnImport: '📂 Import Data (CSV)',
-    btnAddSection: 'Add Section',
-    btnSaveRefresh: '💾 Save & Refresh Display',
-    btnImportSheet: '⬇️ Import from Sheet',
-    btnLoadSample: 'Load Sample Data',
-    btnSaveApply: '💾 Save & Apply',
-    btnAddSlide: '+ Add Slide',
-    btnReset: '↺ Reset to Auto',
-    // Settings
-    scrollTiming: '⏱️ Scroll Timing',
-    secondsPerSlide: 'Seconds per slide',
-    linesPerSlide: 'Lines per slide (section title + entries)',
-    sectionsPerSlide: 'Sections per slide (max sections to group)',
-    autoLoop: 'Auto-loop',
-    autoSplit: 'Auto-split large sections across slides',
-    autoSplitHint: 'When ON, a section with too many entries is automatically spread across multiple slides so no scrolling is needed. Each slide respects the "Lines per slide" limit above.',
-    hideSubtitle: 'Hide subtitles after slide #',
-    hideSubtitleHint: '0 = always show. Subtitles fade out after the Nth slide and return on loop.',
-    music: '🎵 Music',
-    musicUrl: 'Music URL',
-    orUpload: 'Or upload audio file:',
-    autoPlay: 'Auto-play on start',
-    loopMusic: 'Loop music',
-    volume: 'Volume',
-    tts: '🗣️ Text-to-Speech (TTS)',
-    ttsEnable: 'Enable TTS',
-    ttsVoice: 'Voice',
-    ttsGender: 'Gender',
-    ttsRate: 'Speed',
-    ttsPitch: 'Pitch',
-    ttsVolume: 'Volume',
-    ttsReadMerit: 'Read merit text (not just names)',
-    ttsPreview: 'Preview Voice',
-    ttsStop: 'Stop',
-    // Visibility tab
-    sectionVisibility: '👁️ Section Visibility',
-    visibilityHint: 'Uncheck sections to hide them from the display.',
-    // Data tab
-    addNewSection: '➕ Add New Section',
-    titleSubtitle: '🖥️ Title & Sub-Title',
-    newSectionPlaceholder: 'Section title in Sinhala or English…',
-    // Empty state
-    noData: 'දත්ත නොමැත. Admin Panel හරහා දත්ත ඇතුළත් කරන්න.',
-    // Slide Manager
-    slideManager: '🎞️ Slide Manager',
-    slideManagerHint: 'Create custom slide layouts. Drag sections to slides. Sections not assigned to any slide auto-group by settings above.',
-    slideLabel: 'Slide name…',
-    addSectionToSlide: '— Add a section to this slide —',
-    noSectionsAssigned: 'No sections assigned — add from dropdown below',
-    // Placeholders
-    namePlaceholder: 'e.g. සෝමා ජයතිලක',
-    meritPlaceholder: 'e.g. ඔබට හා ඔබේ පවුලේ සියලු දෙනාට ත්‍රිවිධ රත්නයේ ආශිර්වාදය ලැබේවා…',
-    // Language
-    language: '🌐 Language',
-    langSi: 'Sinhala',
-    langEn: 'English',
-  },
-  en: {
-    // Admin header
-    adminTitle: '⚙️ Admin Panel — Merit Scroller',
-    // Tabs
-    tabData: 'Data & Sections',
-    tabSheets: 'Google Sheets',
-    tabVisibility: 'Section Visibility',
-    tabText: 'Title & Sub-Title',
-    tabSettings: 'Settings',
-    tabSlides: 'Slide Manager',
-    // Buttons
-    btnBack: '← Back to Display',
-    btnExport: '⬇️ Export Data (CSV)',
-    btnImport: '📂 Import Data (CSV)',
-    btnAddSection: 'Add Section',
-    btnSaveRefresh: '💾 Save & Refresh Display',
-    btnImportSheet: '⬇️ Import from Sheet',
-    btnLoadSample: 'Load Sample Data',
-    btnSaveApply: '💾 Save & Apply',
-    btnAddSlide: '+ Add Slide',
-    btnReset: '↺ Reset to Auto',
-    // Settings
-    scrollTiming: '⏱️ Scroll Timing',
-    secondsPerSlide: 'Seconds per slide',
-    linesPerSlide: 'Lines per slide (section title + entries)',
-    sectionsPerSlide: 'Sections per slide (max sections to group)',
-    autoLoop: 'Auto-loop',
-    autoSplit: 'Auto-split large sections across slides',
-    autoSplitHint: 'When ON, a section with too many entries is automatically spread across multiple slides so no scrolling is needed. Each slide respects the "Lines per slide" limit above.',
-    hideSubtitle: 'Hide subtitles after slide #',
-    hideSubtitleHint: '0 = always show. Subtitles fade out after the Nth slide and return on loop.',
-    music: '🎵 Music',
-    musicUrl: 'Music URL',
-    orUpload: 'Or upload audio file:',
-    autoPlay: 'Auto-play on start',
-    loopMusic: 'Loop music',
-    volume: 'Volume',
-    tts: '🗣️ Text-to-Speech (TTS)',
-    ttsEnable: 'Enable TTS',
-    ttsVoice: 'Voice',
-    ttsGender: 'Gender',
-    ttsRate: 'Speed',
-    ttsPitch: 'Pitch',
-    ttsVolume: 'Volume',
-    ttsReadMerit: 'Read merit text (not just names)',
-    ttsPreview: 'Preview Voice',
-    ttsStop: 'Stop',
-    // Visibility tab
-    sectionVisibility: '👁️ Section Visibility',
-    visibilityHint: 'Uncheck sections to hide them from the display.',
-    // Data tab
-    addNewSection: '➕ Add New Section',
-    titleSubtitle: '🖥️ Title & Sub-Title',
-    newSectionPlaceholder: 'Section title in Sinhala or English…',
-    // Empty state
-    noData: 'No data. Enter data via Admin Panel.',
-    // Slide Manager
-    slideManager: '🎞️ Slide Manager',
-    slideManagerHint: 'Create custom slide layouts. Drag sections to slides. Sections not assigned to any slide auto-group by settings above.',
-    slideLabel: 'Slide name…',
-    addSectionToSlide: '— Add a section to this slide —',
-    noSectionsAssigned: 'No sections assigned — add from dropdown below',
-    // Placeholders
-    namePlaceholder: 'e.g. John Silva',
-    meritPlaceholder: 'e.g. May the Triple Gem bless you and your family…',
-    // Language
-    language: '🌐 Language',
-    langSi: 'Sinhala',
-    langEn: 'English',
-  }
-};
-
-function t(key) {
-  const lang = settings.currentLang || 'si';
-  return translations[lang]?.[key] || translations.si[key] || key;
-}
-
-function setLanguage(lang) {
-  settings.currentLang = lang;
-  saveState();
-  applyTranslations();
-  applyDisplaySettings();
-}
-
-function applyTranslations() {
-  const lang = settings.currentLang || 'si';
-
-  // Update admin header
-  const adminTitle = document.querySelector('#admin-view h1');
-  if (adminTitle) adminTitle.textContent = t('adminTitle');
-
-  // Update tab buttons (need to find by onclick or position)
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  if (tabBtns[0]) tabBtns[0].textContent = t('tabData');
-  if (tabBtns[1]) tabBtns[1].textContent = t('tabSheets');
-  if (tabBtns[2]) tabBtns[2].textContent = t('tabVisibility');
-  if (tabBtns[3]) tabBtns[3].textContent = t('tabText');
-  if (tabBtns[4]) tabBtns[4].textContent = t('tabSettings');
-  if (tabBtns[5]) tabBtns[5].textContent = t('tabSlides');
-
-  // Update back button
-  const backBtn = document.querySelector('.btn-back');
-  if (backBtn) backBtn.textContent = t('btnBack');
-
-  // Update export/import buttons
-  const exportBtn = document.querySelector('.btn-export');
-  if (exportBtn) exportBtn.textContent = t('btnExport');
-
-  // Update add section elements
-  const addSectionTitle = document.querySelector('#tab-data h4');
-  if (addSectionTitle) addSectionTitle.textContent = t('addNewSection');
-
-  const sectionInput = document.getElementById('newSectionTitle');
-  if (sectionInput) sectionInput.placeholder = t('newSectionPlaceholder');
-
-  const addSectionBtn = document.querySelector('.btn-add-section');
-  if (addSectionBtn) addSectionBtn.textContent = t('btnAddSection');
-
-  // Update save buttons
-  const saveBtns = document.querySelectorAll('.btn-primary');
-  saveBtns.forEach(btn => {
-    if (btn.textContent.includes('Save') || btn.textContent.includes('💾')) {
-      const text = btn.textContent;
-      if (text.includes('Refresh')) btn.textContent = t('btnSaveRefresh');
-      else if (!btn.textContent.includes('Import')) btn.textContent = t('btnSaveApply');
-    }
-  });
-
-  // Update Settings tab headings
-  const settingsCards = document.querySelectorAll('#tab-settings .admin-card h3');
-  if (settingsCards[0]) settingsCards[0].textContent = t('scrollTiming');
-  if (settingsCards[1]) settingsCards[1].textContent = t('music');
-
-  // Update visibility tab
-  const visTitle = document.querySelector('#tab-visibility h3');
-  if (visTitle) visTitle.textContent = t('sectionVisibility');
-
-  // Update Title & Sub-Title tab
-  const textTitle = document.querySelector('#tab-text h3');
-  if (textTitle) textTitle.textContent = t('titleSubtitle');
-
-  // Update slide manager
-  const smTitle = document.querySelector('#tab-slidemanager h3');
-  if (smTitle) smTitle.textContent = t('slideManager');
-
-  // Update empty state message
-  const emptyMsg = document.querySelector('#scroll-track > div');
-  if (emptyMsg && (emptyMsg.textContent.includes('දත්ත') || emptyMsg.textContent.includes('No data'))) {
-    emptyMsg.textContent = t('noData');
-  }
-
-  // Update language toggle
-  updateLanguageToggle();
-
-  // Update labels
-  document.querySelectorAll('.field-label').forEach(label => {
-    const text = label.textContent;
-    if (text.includes('Seconds per slide')) label.textContent = t('secondsPerSlide');
-    if (text.includes('Lines per slide')) label.textContent = t('linesPerSlide');
-    if (text.includes('Sections per slide')) label.textContent = t('sectionsPerSlide');
-    if (text.includes('Hide subtitles')) label.textContent = t('hideSubtitle');
-    if (text.includes('Music URL')) label.textContent = t('musicUrl');
-    if (text.includes('Or upload')) label.textContent = t('orUpload');
-  });
-
-  // Update toggle labels
-  document.querySelectorAll('.toggle-label').forEach(label => {
-    const text = label.textContent;
-    if (text.includes('Auto-loop')) label.textContent = t('autoLoop');
-    if (text.includes('Auto-split')) label.textContent = t('autoSplit');
-    if (text.includes('Auto-play')) label.textContent = t('autoPlay');
-    if (text.includes('Loop music')) label.textContent = t('loopMusic');
-    if (text.includes('Enable TTS') || text.includes('Text-to-Speech')) label.textContent = t('ttsEnable');
-    if (text.includes('Read merit')) label.textContent = t('ttsReadMerit');
-  });
-}
-
-function updateLanguageToggle() {
-  const container = document.getElementById('lang-toggle-container');
-  if (!container) return;
-
-  const lang = settings.currentLang || 'si';
-  container.innerHTML = `
-    <button class="lang-btn ${lang === 'si' ? 'active' : ''}" onclick="setLanguage('si')">🇱🇰 සිංහල</button>
-    <button class="lang-btn ${lang === 'en' ? 'active' : ''}" onclick="setLanguage('en')">🇬🇧 English</button>
-  `;
-}
 
 // ---- CSV Export / Import (with full config) ----
 
@@ -1295,8 +1033,6 @@ function showAdmin() {
   ttsStop();
   document.getElementById('display-view').style.display='none';
   document.getElementById('admin-view').style.display='block';
-  updateLanguageToggle();
-  applyTranslations();
   populateAdmin();
 }
 function showDisplay() {
@@ -1831,7 +1567,6 @@ function loadSampleData() {
 })();
 
 loadState();
-updateLanguageToggle();
 applyDisplaySettings();
 applyColors();
 buildScrollTrack();

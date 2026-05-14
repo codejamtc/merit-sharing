@@ -379,7 +379,12 @@ textarea{resize:vertical;min-height:70px;line-height:1.6;}
           <span class="toggle-label">Auto-loop</span>
           <label class="toggle-switch"><input type="checkbox" id="autoLoop" checked><span class="toggle-slider"></span></label>
         </div>
-        <label class="field-label" style="margin-top:8px;">Hide subtitles after slide #</label>
+        <div class="section-toggle-row" style="border:none;padding-top:8px;">
+          <span class="toggle-label">Auto-split large sections across slides</span>
+          <label class="toggle-switch"><input type="checkbox" id="autoSplitSections" checked><span class="toggle-slider"></span></label>
+        </div>
+        <p class="hint" style="margin-top:-4px;">When ON, a section with too many entries is automatically spread across multiple slides so no scrolling is needed. Each slide respects the "Lines per slide" limit above.</p>
+        <label class="field-label" style="margin-top:4px;">Hide subtitles after slide #</label>
         <input type="range" id="hideSubtitleAfter" min="0" max="20" value="3" step="1" oninput="updateHideSubtitle()">
         <div class="speed-display">
           <span>Never (0)</span>
@@ -398,7 +403,8 @@ textarea{resize:vertical;min-height:70px;line-height:1.6;}
         </div>
         <p class="hint" style="margin-top:-8px;">Suggested: Buddhist meditation music from YouTube/SoundCloud embed or direct MP3 link. Try: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 as a placeholder, or search for "Buddhist meditation music mp3 free".</p>
         <label class="field-label">Or upload audio file:</label>
-        <input type="file" id="musicFile" accept="audio/*" onchange="loadMusicFile()" style="background:transparent;border:none;padding:0;margin-bottom:10px;font-size:13px;color:var(--text-muted);">
+        <input type="file" id="musicFile" accept="audio/*" onchange="loadMusicFile()" style="background:transparent;border:none;padding:0;margin-bottom:4px;font-size:13px;color:var(--text-muted);">
+        <div id="music-file-status" style="font-size:11px;color:#8dcc55;font-family:'Noto Sans Sinhala',sans-serif;margin-bottom:10px;min-height:16px;"></div>
         <div class="section-toggle-row" style="border:none;padding:0;">
           <span class="toggle-label">Auto-play on start</span>
           <label class="toggle-switch"><input type="checkbox" id="autoPlayMusic"><span class="toggle-slider"></span></label>
@@ -552,9 +558,11 @@ let settings = {
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
   hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
+  autoSplitSections:true,
 };
 
 let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
+let localMusicBlobUrl = null;  // kept in memory; not persisted
 const audio = document.getElementById('bgMusic');
 
 // ---- CSV Export / Import ----
@@ -848,7 +856,10 @@ function buildSectionHTML(sec) {
     ? `<span class="section-icon-img${iconHidden?' hidden':''}"></span>`
     : '';
   const titlePad = hasIcon ? 'padding-left:76px;' : '';
-  let h = `<div class="section-title-bar ${iconClass}" style="${titlePad}">${iconSpan}<h2>${sec.title}</h2></div>`;
+  const contBadge = sec._continued
+    ? `<span style="font-size:0.55em;opacity:.65;margin-left:12px;font-weight:400;vertical-align:middle;">(cont.)</span>`
+    : '';
+  let h = `<div class="section-title-bar ${iconClass}" style="${titlePad}">${iconSpan}<h2>${sec.title}${contBadge}</h2></div>`;
   if (nameOnly) {
     h += '<div class="names-two-col">';
     sec.entries.forEach(e => {
@@ -879,6 +890,32 @@ function sectionLineCount(sec) {
   return lines;
 }
 
+// Split a section into chunks that each fit within maxLines.
+// Returns array of virtual section objects with a subset of entries.
+function splitSectionIntoChunks(sec, maxLines) {
+  const nameOnly = NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly;
+  const chunks = [];
+  let chunk = [];
+  let lines = 1; // 1 for the title bar
+
+  for (const entry of sec.entries) {
+    const cost = nameOnly
+      ? 0.5   // two-col: 2 names per visual row
+      : calcEntryLines(entry, false);
+
+    if (chunk.length > 0 && lines + cost > maxLines) {
+      chunks.push({...sec, entries: chunk, _continued: true});
+      chunk = [entry];
+      lines = 1 + cost; // reset: new title + this entry
+    } else {
+      chunk.push(entry);
+      lines += cost;
+    }
+  }
+  if (chunk.length) chunks.push({...sec, entries: chunk, _continued: chunks.length > 0});
+  return chunks.length ? chunks : [{...sec, entries: sec.entries}];
+}
+
 function buildScrollTrack() {
   const track = document.getElementById('scroll-track');
   track.innerHTML=''; slideGroups=[]; currentSlide=0;
@@ -894,13 +931,24 @@ function buildScrollTrack() {
   }
 
   const maxLines = settings.linesPerSlide || 15;
+  const doSplit  = settings.autoSplitSections !== false;
 
-  // Pack sections into slides respecting maxLines budget
+  // Expand sections: if autoSplit is on, large sections become multiple chunks
+  const expandedSections = [];
+  visible.forEach(sec => {
+    if (doSplit) {
+      splitSectionIntoChunks(sec, maxLines).forEach(chunk => expandedSections.push(chunk));
+    } else {
+      expandedSections.push(sec);
+    }
+  });
+
+  // Pack expanded sections into slides respecting maxLines budget
   let slides = [];
   let currentSlideGroup = [];
   let currentLines = 0;
 
-  visible.forEach(sec => {
+  expandedSections.forEach(sec => {
     const secLines = sectionLineCount(sec);
     if (currentSlideGroup.length > 0 && currentLines + secLines > maxLines) {
       slides.push(currentSlideGroup);
@@ -1047,6 +1095,9 @@ function populateAdmin() {
   document.getElementById('musicUrl').value = settings.musicUrl||'';
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
   const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||3; updateHideSubtitle();}
+  const ass=document.getElementById('autoSplitSections'); if(ass) ass.checked=settings.autoSplitSections!==false;
+  const mfStatus=document.getElementById('music-file-status');
+  if(mfStatus && localMusicBlobUrl && settings.musicUrl && settings.musicUrl.startsWith('(local:')) mfStatus.textContent='✓ '+settings.musicUrl.slice(7,settings.musicUrl.length-1)+' (loaded in memory)';
   const sbg2=document.getElementById('showSectionBgImage'); if(sbg2) sbg2.checked=settings.showSectionBgImage!==false;
   const ct=document.getElementById('colorTitle');         if(ct)  ct.value=settings.colorTitle||'#D4AF37';
   const cs=document.getElementById('colorSubtitle');      if(cs)  cs.value=settings.colorSubtitle||'#C8A96E';
@@ -1068,7 +1119,8 @@ function saveAndRefresh() {
   collectEditorData();
   settings.speed            = parseInt(document.getElementById('speedSlider').value);
   settings.sectionsPerSlide = parseInt(document.getElementById('sectionsPerSlide').value);
-  settings.autoLoop         = document.getElementById('autoLoop').checked;
+  settings.autoLoop          = document.getElementById('autoLoop').checked;
+  settings.autoSplitSections = document.getElementById('autoSplitSections')?.checked ?? true;
   settings.autoPlayMusic    = document.getElementById('autoPlayMusic').checked;
   settings.loopMusic        = document.getElementById('loopMusic').checked;
   settings.volume           = parseInt(document.getElementById('volumeSlider').value)/100;
@@ -1287,16 +1339,38 @@ function updateVolume() {
   audio.volume=v/100;
 }
 function applyMusic() {
-  audio.loop=settings.loopMusic; audio.volume=settings.volume;
-  if (settings.musicUrl&&!settings.musicUrl.startsWith('(local')) {
-    audio.src=settings.musicUrl;
-    if (settings.autoPlayMusic) {audio.play().catch(()=>{});musicPlaying=true;updateMusicBtn();}
+  audio.loop = settings.loopMusic;
+  audio.volume = settings.volume;
+
+  if (localMusicBlobUrl) {
+    // Local file loaded this session — restore src if cleared
+    if (!audio.src || audio.src === window.location.href) audio.src = localMusicBlobUrl;
+    if (settings.autoPlayMusic && !musicPlaying) {
+      audio.play().catch(()=>{});
+      musicPlaying=true; updateMusicBtn();
+    }
+  } else if (settings.musicUrl && !settings.musicUrl.startsWith('(local')) {
+    audio.src = settings.musicUrl;
+    if (settings.autoPlayMusic) {
+      audio.play().catch(()=>{}); musicPlaying=true; updateMusicBtn();
+    }
   }
 }
 function toggleMusic() {
-  if (!audio.src) {alert('Please set a music URL in Admin → Settings → Music');return;}
-  if (musicPlaying) {audio.pause();musicPlaying=false;}
-  else {audio.play().catch(e=>alert('Cannot play: '+e.message));musicPlaying=true;}
+  // Restore local blob if src was lost
+  if (localMusicBlobUrl && (!audio.src || audio.src === window.location.href)) {
+    audio.src = localMusicBlobUrl;
+  }
+  if (!audio.src || audio.src === window.location.href) {
+    alert('Please set a music URL or upload a file in Admin → Settings → Music');
+    return;
+  }
+  if (musicPlaying) {
+    audio.pause(); musicPlaying=false;
+  } else {
+    audio.play().catch(e => alert('Cannot play: ' + e.message));
+    musicPlaying=true;
+  }
   updateMusicBtn();
 }
 function updateMusicBtn() {
@@ -1313,8 +1387,17 @@ function previewMusic() {
 function loadMusicFile() {
   const file=document.getElementById('musicFile').files[0];
   if (!file) return;
-  audio.src=URL.createObjectURL(file); settings.musicUrl='(local)';
-  document.getElementById('musicUrl').value='(local file: '+file.name+')';
+  // Revoke previous blob to free memory
+  if (localMusicBlobUrl) URL.revokeObjectURL(localMusicBlobUrl);
+  localMusicBlobUrl = URL.createObjectURL(file);
+  audio.src = localMusicBlobUrl;
+  audio.loop = document.getElementById('loopMusic')?.checked ?? true;
+  audio.volume = parseInt(document.getElementById('volumeSlider')?.value||60)/100;
+  settings.musicUrl = '(local:' + file.name + ')';
+  document.getElementById('musicUrl').value = '(local file: ' + file.name + ')';
+  // Status
+  const statusEl = document.getElementById('music-file-status');
+  if (statusEl) statusEl.textContent = '✓ "' + file.name + '" loaded. Press 🎵 to play.';
 }
 function switchTab(id,btn) {
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));

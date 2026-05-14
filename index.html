@@ -2,6 +2,9 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -439,6 +442,17 @@ select option:hover{
         </div>
         <div id="section-toggles"></div>
       </div>
+
+      <div class="admin-card" style="grid-column:1/-1;">
+        <h3>📋 Names-Per-Slide Limit <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:8px;">(for name-list sections)</span></h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Set how many names to show per slide for sections that display a two-column name list.
+          When the list exceeds this number, it automatically continues on the next slide with the same section title.
+          Set to <strong style="color:var(--gold);">0</strong> to use the global "Lines per slide" setting.
+        </p>
+        <div id="section-row-limits"></div>
+        <button class="btn-primary" onclick="saveRowLimitsAndApply()" style="max-width:260px;margin-top:8px;">💾 Save &amp; Apply</button>
+      </div>
     </div>
   </div>
 
@@ -664,6 +678,7 @@ let settings = {
   autoSplitSections:true,
   slideManagerEnabled:false,
   slideManagerConfig:[],  // [{label:'Slide 1', sectionIds:['s1','s2']}]
+  sectionRowLimits:{},   // {secId: maxNamesPerSlide}
 };
 
 let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
@@ -709,6 +724,7 @@ function exportCSV() {
   // 2c. Slide Manager: [{label, sectionIds:[...]}, ...]
   lines.push(csvRow(['__CONFIG__', 'slide_manager_enabled', settings.slideManagerEnabled ? '1' : '0']));
   lines.push(csvRow(['__CONFIG__', 'slide_manager', JSON.stringify(settings.slideManagerConfig||[])]));
+  lines.push(csvRow(['__CONFIG__', 'section_row_limits', JSON.stringify(settings.sectionRowLimits||{})]));
 
   // 2d. Display settings (text, colors, subtitles)
   const displaySettings = {
@@ -880,6 +896,10 @@ function importCSV(event) {
               configApplied.push('tts');
               break;
             }
+            case 'section_row_limits':
+              settings.sectionRowLimits = JSON.parse(val);
+              configApplied.push('row_limits');
+              break;
           }
         } catch(parseErr) {
           console.warn('Config parse error for key:', key, parseErr);
@@ -1449,22 +1469,32 @@ function sectionLineCount(sec) {
 }
 
 // Split a section into chunks that each fit within maxLines.
+// For name-only sections: optionally use a per-section row limit.
 // Returns array of virtual section objects with a subset of entries.
 function splitSectionIntoChunks(sec, maxLines) {
   const nameOnly = NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly;
+
+  // Per-section row limit overrides global lines budget for name-only sections
+  const perSecLimit = (nameOnly && settings.sectionRowLimits && settings.sectionRowLimits[sec.id])
+    ? parseInt(settings.sectionRowLimits[sec.id])
+    : null;
+
   const chunks = [];
   let chunk = [];
   let lines = 1; // 1 for the title bar
 
   for (const entry of sec.entries) {
-    const cost = nameOnly
-      ? 0.5   // two-col: 2 names per visual row
-      : calcEntryLines(entry, false);
+    const cost = nameOnly ? 0.5 : calcEntryLines(entry, false);
 
-    if (chunk.length > 0 && lines + cost > maxLines) {
+    // Use per-section name limit if set, otherwise use global lines budget
+    const limit = perSecLimit !== null
+      ? (perSecLimit / 2 + 1)   // perSecLimit names → /2 because two-col, +1 for title
+      : maxLines;
+
+    if (chunk.length > 0 && lines + cost > limit) {
       chunks.push({...sec, entries: chunk, _continued: true});
       chunk = [entry];
-      lines = 1 + cost; // reset: new title + this entry
+      lines = 1 + cost;
     } else {
       chunk.push(entry);
       lines += cost;
@@ -1670,6 +1700,7 @@ function populateAdmin() {
   const cst=document.getElementById('colorSectionTitle'); if(cst) cst.value=settings.colorSectionTitle||'#F0D060';
   const cm=document.getElementById('colorMerit');         if(cm)  cm.value=settings.colorMerit||'#C8A96E';
   updateSpeed(); updateSectionsPerSlide(); updateLinesPerSlide(); updateVolume();
+  buildSectionRowLimitsUI();
   // TTS
   const ttsEn=document.getElementById('ttsEnabled'); if(ttsEn) ttsEn.checked=settings.ttsEnabled||false;
   const ttsR=document.getElementById('ttsRateSlider'); if(ttsR){ttsR.value=settings.ttsRate||0.85; updateTtsRate();}
@@ -1688,6 +1719,9 @@ function saveAndRefresh() {
   settings.autoLoop          = document.getElementById('autoLoop').checked;
   settings.autoSplitSections  = document.getElementById('autoSplitSections')?.checked ?? true;
   settings.slideManagerEnabled = document.getElementById('slideManagerEnabled')?.checked ?? false;
+  // Row limits saved live via saveRowLimitsAndApply() — read any open inputs here too
+  if (!settings.sectionRowLimits) settings.sectionRowLimits={};
+  document.querySelectorAll('[id^="rowlimit-"]').forEach(el=>{ const sid=el.id.replace('rowlimit-',''); const v=parseInt(el.value)||0; if(v>0) settings.sectionRowLimits[sid]=v; else delete settings.sectionRowLimits[sid]; });
   settings.autoPlayMusic    = document.getElementById('autoPlayMusic').checked;
   settings.loopMusic        = document.getElementById('loopMusic').checked;
   settings.volume           = parseInt(document.getElementById('volumeSlider').value)/100;
@@ -1766,6 +1800,72 @@ function deleteSection(id) {
 }
 
 // ---- Build admin UI ----
+function buildSectionRowLimitsUI() {
+  const c = document.getElementById('section-row-limits');
+  if (!c) return;
+  c.innerHTML = '';
+
+  // Show all name-only sections AND any visible section with >10 entries
+  const targets = SECTIONS.filter(sec =>
+    NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly ||
+    (sec.entries.length > 10 && settings.sectionVisibility[sec.id] !== false)
+  );
+
+  if (!targets.length) {
+    c.innerHTML = '<p style="font-size:12px;color:var(--text-muted);font-family:sans-serif;">No qualifying sections found (need name-only sections or sections with >10 entries).</p>';
+    return;
+  }
+
+  targets.forEach(sec => {
+    const current = (settings.sectionRowLimits && settings.sectionRowLimits[sec.id]) || 0;
+    const nameOnly = NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly;
+    const tag = nameOnly
+      ? '<span style="font-size:10px;background:rgba(212,175,55,.15);color:var(--gold);padding:2px 7px;border-radius:8px;margin-left:8px;font-family:sans-serif;">2-col names</span>'
+      : '';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid rgba(212,175,55,.07);';
+
+    const labelWrap = document.createElement('div');
+    labelWrap.innerHTML = `<div style="font-size:13px;color:var(--text-main);font-family:'Noto Serif Sinhala',serif;line-height:1.4;">${sec.title}${tag}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px;font-family:'Noto Sans Sinhala',sans-serif;">${sec.entries.length} entries total</div>`;
+
+    const inputWrap = document.createElement('div');
+    inputWrap.style.cssText = 'display:flex;align-items:center;gap:8px;flex-shrink:0;';
+
+    const numIn = document.createElement('input');
+    numIn.type = 'number';
+    numIn.id = 'rowlimit-' + sec.id;
+    numIn.value = current;
+    numIn.min = 0;
+    numIn.max = 200;
+    numIn.style.cssText = 'width:70px;margin-bottom:0;text-align:center;';
+    numIn.title = '0 = use global setting';
+
+    const hint = document.createElement('span');
+    hint.style.cssText = 'font-size:11px;color:var(--text-muted);font-family:sans-serif;white-space:nowrap;';
+    hint.textContent = 'names/slide (0=auto)';
+
+    inputWrap.append(numIn, hint);
+    row.append(labelWrap, inputWrap);
+    c.appendChild(row);
+  });
+}
+
+function saveRowLimitsAndApply() {
+  if (!settings.sectionRowLimits) settings.sectionRowLimits = {};
+  document.querySelectorAll('[id^="rowlimit-"]').forEach(el => {
+    const secId = el.id.replace('rowlimit-', '');
+    const val = parseInt(el.value) || 0;
+    if (val > 0) settings.sectionRowLimits[secId] = val;
+    else delete settings.sectionRowLimits[secId];
+  });
+  saveState();
+  buildScrollTrack();
+  applySectionBgImage();
+  setCsvStatus('✓ Row limits saved & display updated', true);
+}
+
 function buildSectionToggles() {
   const c = document.getElementById('section-toggles');
   c.innerHTML='';
@@ -1981,6 +2081,7 @@ function switchTab(id,btn) {
   document.getElementById(id).classList.add('active');
   if (btn) btn.classList.add('active');
   if (id === 'tab-slidemanager') initSlideManagerTab();
+  if (id === 'tab-visibility') buildSectionRowLimitsUI();
 }
 
 // ---- Google Sheet import ----
@@ -2088,6 +2189,16 @@ function loadSampleData() {
       }
     }
   } catch(e) {}
+})();
+
+// Version guard: clear localStorage if built with broken older version
+(function() {
+  const CURRENT_VERSION = '2.5';
+  const stored = localStorage.getItem('poya_app_version');
+  if (stored !== CURRENT_VERSION) {
+    // Don't clear data — just mark the new version
+    localStorage.setItem('poya_app_version', CURRENT_VERSION);
+  }
 })();
 
 loadState();

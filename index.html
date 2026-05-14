@@ -364,6 +364,7 @@ select option:hover{
     <button class="tab-btn active" onclick="switchTab('tab-data',this)">Data &amp; Sections</button>
     <button class="tab-btn" onclick="switchTab('tab-sheets',this)">Google Sheets</button>
     <button class="tab-btn" onclick="switchTab('tab-visibility',this)">Section Visibility</button>
+    <button class="tab-btn" onclick="switchTab('tab-text',this)">Title &amp; Sub-Title</button>
     <button class="tab-btn" onclick="switchTab('tab-settings',this)">Settings</button>
     <button class="tab-btn" onclick="switchTab('tab-slidemanager',this)">Slide Manager</button>
   </div>
@@ -458,6 +459,33 @@ select option:hover{
         </p>
         <div id="section-row-limits"></div>
         <button class="btn-primary" onclick="saveRowLimitsAndApply()" style="max-width:260px;margin-top:8px;">💾 Save &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: TITLE & SUB-TITLE -->
+  <div id="tab-text" class="tab-pane">
+    <div class="admin-card" style="grid-column:1/-1;">
+      <h3>🖥️ Title &amp; Sub-Title</h3>
+      <div class="admin-grid" style="gap:14px;">
+        <div>
+          <label class="field-label">Event Title</label>
+          <input type="text" id="eventTitle" value="වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව">
+          <label class="field-label">Subtitle Line 1</label>
+          <textarea id="subLine1" rows="2">නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්</textarea>
+        </div>
+        <div>
+          <label class="field-label">Subtitle Line 2</label>
+          <textarea id="subLine2" rows="2">නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!</textarea>
+          <label class="field-label">Subtitle Line 3</label>
+          <textarea id="subLine3" rows="2">උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!</textarea>
+          <label class="field-label">Footer Text</label>
+          <input type="text" id="footerText" value="කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය">
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;">
+        <button class="btn-primary" onclick="saveAndRefresh()" style="max-width:280px;">💾 Save &amp; Apply</button>
+        <button class="btn-primary" onclick="saveAndRefresh();showDisplay();" style="max-width:280px;background:linear-gradient(135deg,#1a4a2a,#2d7a45);">💾 Save &amp; Refresh Display</button>
       </div>
     </div>
   </div>
@@ -588,30 +616,6 @@ select option:hover{
         </div>
         <p class="hint">Changes apply when you Save &amp; Apply.</p>
       </div>
-
-      <div class="admin-card" style="grid-column:1/-1;">
-        <h3>🖥️ Display Text</h3>
-        <div class="admin-grid" style="gap:14px;">
-          <div>
-            <label class="field-label">Event Title</label>
-            <input type="text" id="eventTitle" value="වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව">
-            <label class="field-label">Subtitle Line 1</label>
-            <textarea id="subLine1" rows="2">නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්</textarea>
-          </div>
-          <div>
-            <label class="field-label">Subtitle Line 2</label>
-            <textarea id="subLine2" rows="2">නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!</textarea>
-            <label class="field-label">Subtitle Line 3</label>
-            <textarea id="subLine3" rows="2">උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!</textarea>
-            <label class="field-label">Footer Text</label>
-            <input type="text" id="footerText" value="කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය">
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
-          <button class="btn-primary" onclick="saveAndRefresh()" style="max-width:280px;">💾 Save &amp; Apply</button>
-          <button class="btn-primary" onclick="saveAndRefresh();showDisplay();" style="max-width:280px;background:linear-gradient(135deg,#1a4a2a,#2d7a45);">💾 Save &amp; Refresh Display</button>
-        </div>
-      </div>
     </div>
   </div>
   <!-- TAB: SLIDE MANAGER -->
@@ -703,6 +707,7 @@ const translations = {
     tabData: 'Data & Sections',
     tabSheets: 'Google Sheets',
     tabVisibility: 'Section Visibility',
+    tabText: 'Title & Sub-Title',
     tabSettings: 'Settings',
     tabSlides: 'Slide Manager',
     // Buttons
@@ -747,6 +752,7 @@ const translations = {
     visibilityHint: 'Uncheck sections to hide them from the display.',
     // Data tab
     addNewSection: '➕ Add New Section',
+    titleSubtitle: '🖥️ Title & Sub-Title',
     newSectionPlaceholder: 'Section title in Sinhala or English…',
     // Empty state
     noData: 'දත්ත නොමැත. Admin Panel හරහා දත්ත ඇතුළත් කරන්න.',
@@ -771,6 +777,7 @@ const translations = {
     tabData: 'Data & Sections',
     tabSheets: 'Google Sheets',
     tabVisibility: 'Section Visibility',
+    tabText: 'Title & Sub-Title',
     tabSettings: 'Settings',
     tabSlides: 'Slide Manager',
     // Buttons
@@ -815,6 +822,7 @@ const translations = {
     visibilityHint: 'Uncheck sections to hide them from the display.',
     // Data tab
     addNewSection: '➕ Add New Section',
+    titleSubtitle: '🖥️ Title & Sub-Title',
     newSectionPlaceholder: 'Section title in Sinhala or English…',
     // Empty state
     noData: 'No data. Enter data via Admin Panel.',
@@ -858,8 +866,9 @@ function applyTranslations() {
   if (tabBtns[0]) tabBtns[0].textContent = t('tabData');
   if (tabBtns[1]) tabBtns[1].textContent = t('tabSheets');
   if (tabBtns[2]) tabBtns[2].textContent = t('tabVisibility');
-  if (tabBtns[3]) tabBtns[3].textContent = t('tabSettings');
-  if (tabBtns[4]) tabBtns[4].textContent = t('tabSlides');
+  if (tabBtns[3]) tabBtns[3].textContent = t('tabText');
+  if (tabBtns[4]) tabBtns[4].textContent = t('tabSettings');
+  if (tabBtns[5]) tabBtns[5].textContent = t('tabSlides');
 
   // Update back button
   const backBtn = document.querySelector('.btn-back');
@@ -897,6 +906,10 @@ function applyTranslations() {
   // Update visibility tab
   const visTitle = document.querySelector('#tab-visibility h3');
   if (visTitle) visTitle.textContent = t('sectionVisibility');
+
+  // Update Title & Sub-Title tab
+  const textTitle = document.querySelector('#tab-text h3');
+  if (textTitle) textTitle.textContent = t('titleSubtitle');
 
   // Update slide manager
   const smTitle = document.querySelector('#tab-slidemanager h3');

@@ -126,6 +126,51 @@ input[type="text"],input[type="number"],input[type="range"],select,textarea{
 input:focus,select:focus,textarea:focus{border-color:var(--gold);}
 input[type="range"]{padding:4px 0;cursor:pointer;}
 textarea{resize:vertical;min-height:70px;line-height:1.6;}
+/* Dropdown option list: force black bg + dark text for readability */
+select option{
+  background:#1a2535;
+  color:#f0d060;
+}
+select option:checked,
+select option:hover{
+  background:#2a3a50;
+  color:#ffffff;
+}
+/* Slide Manager + TTS selects: white bg so options are clearly readable */
+#ttsVoiceSelect,
+#ttsGender,
+[id^="sm-sec-select-"]{
+  background:#ffffff;
+  color:#111111;
+}
+#ttsVoiceSelect option,
+#ttsGender option,
+[id^="sm-sec-select-"] option{
+  background:#ffffff;
+  color:#111111;
+}
+#ttsVoiceSelect option:checked,
+#ttsGender option:checked,
+[id^="sm-sec-select-"] option:checked{
+  background:#1a4a2a;
+  color:#ffffff;
+}
+/* Slide Manager select inside sm-add-section-row */
+.sm-add-section-row select{
+  background:#ffffff;
+  color:#111111;
+}
+.sm-add-section-row select option{
+  background:#ffffff;
+  color:#111111;
+}
+.sm-add-section-row select option:disabled{
+  color:#999999;
+}
+.sm-add-section-row select option:checked{
+  background:#1a4a2a;
+  color:#ffffff;
+}
 
 .section-toggle-row{display:flex;align-items:center;justify-content:space-between;
   padding:10px 0;border-bottom:1px solid rgba(212,175,55,.07);gap:12px;}
@@ -435,7 +480,7 @@ textarea{resize:vertical;min-height:70px;line-height:1.6;}
         <h3>🎵 Music</h3>
         <label class="field-label">Music URL</label>
         <div class="music-row">
-          <input type="text" id="musicUrl" placeholder="https://...">
+          <input type="text" id="musicUrl" placeholder="https://..." value="https://raw.githubusercontent.com/codejamtc/merit-sharing/main/scott-buckley-reverie(chosic.com).mp3">
           <button onclick="previewMusic()">▶</button>
         </div>
         <p class="hint" style="margin-top:-8px;">Suggested: Buddhist meditation music from YouTube/SoundCloud embed or direct MP3 link. Try: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 as a placeholder, or search for "Buddhist meditation music mp3 free".</p>
@@ -606,7 +651,7 @@ let SECTIONS = DEFAULT_SECTIONS.map(s => ({...s, entries:[]}));
 
 let settings = {
   speed:10, sectionsPerSlide:2, linesPerSlide:15, autoLoop:true,
-  autoPlayMusic:false, loopMusic:true, volume:0.6, musicUrl:'',
+  autoPlayMusic:true, loopMusic:true, volume:0.6, musicUrl:'https://raw.githubusercontent.com/codejamtc/merit-sharing/main/scott-buckley-reverie(chosic.com).mp3',
   sectionVisibility:{},
   eventTitle:'වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව',
   subLine1:'නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්',
@@ -625,35 +670,102 @@ let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
 let localMusicBlobUrl = null;  // kept in memory; not persisted
 const audio = document.getElementById('bgMusic');
 
-// ---- CSV Export / Import ----
+// ---- CSV Export / Import (with full config) ----
+
+function csvCell(val) {
+  const s = String(val == null ? '' : val).replace(/"/g, '""');
+  return (s.includes(',') || s.includes('"') || s.includes('\n') || s.includes('\r')) ? `"${s}"` : s;
+}
+
+function csvRow(arr) { return arr.map(csvCell).join(','); }
+
 function exportCSV() {
   collectEditorData();
-  const rows = [['section_id','section_title','name','merit','custom']];
+
+  const lines = [];
+
+  // ── 1. Section data ──────────────────────────────────────────
+  lines.push(csvRow(['section_id','section_title','name','merit','custom']));
   SECTIONS.forEach(sec => {
     if (sec.entries.length === 0) {
-      // Still export the section even if empty so it can be re-imported
-      rows.push([sec.id, sec.title, '', '', sec.custom ? '1' : '0']);
+      lines.push(csvRow([sec.id, sec.title, '', '', sec.custom ? '1' : '0']));
     } else {
       sec.entries.forEach(e => {
-        rows.push([sec.id, sec.title, e.name||'', e.merit||'', sec.custom ? '1' : '0']);
+        lines.push(csvRow([sec.id, sec.title, e.name||'', e.merit||'', sec.custom ? '1' : '0']));
       });
     }
   });
-  const csv = rows.map(r => r.map(cell => {
-    const s = String(cell).replace(/"/g, '""');
-    return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s}"` : s;
-  }).join(',')).join('\n');
 
-  const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8;'});
+  // ── 2. Config block (clearly separated) ──────────────────────
+  lines.push('');
+  lines.push(csvRow(['__CONFIG__','key','value']));
+
+  // 2a. Section visibility: {id: bool, ...}
+  lines.push(csvRow(['__CONFIG__', 'visibility', JSON.stringify(settings.sectionVisibility||{})]));
+
+  // 2b. Section icon hidden: {id: bool, ...}
+  lines.push(csvRow(['__CONFIG__', 'icon_hidden', JSON.stringify(settings.sectionIconHidden||{})]));
+
+  // 2c. Slide Manager: [{label, sectionIds:[...]}, ...]
+  lines.push(csvRow(['__CONFIG__', 'slide_manager_enabled', settings.slideManagerEnabled ? '1' : '0']));
+  lines.push(csvRow(['__CONFIG__', 'slide_manager', JSON.stringify(settings.slideManagerConfig||[])]));
+
+  // 2d. Display settings (text, colors, subtitles)
+  const displaySettings = {
+    eventTitle:       settings.eventTitle,
+    subLine1:         settings.subLine1,
+    subLine2:         settings.subLine2,
+    subLine3:         settings.subLine3,
+    footerText:       settings.footerText,
+    colorTitle:       settings.colorTitle,
+    colorSubtitle:    settings.colorSubtitle,
+    colorSectionTitle:settings.colorSectionTitle,
+    colorMerit:       settings.colorMerit,
+  };
+  lines.push(csvRow(['__CONFIG__', 'display', JSON.stringify(displaySettings)]));
+
+  // 2e. Scroll / timing settings
+  const scrollSettings = {
+    speed:              settings.speed,
+    linesPerSlide:      settings.linesPerSlide,
+    sectionsPerSlide:   settings.sectionsPerSlide,
+    autoLoop:           settings.autoLoop,
+    autoSplitSections:  settings.autoSplitSections,
+    hideSubtitleAfter:  settings.hideSubtitleAfter,
+    showSectionBgImage: settings.showSectionBgImage,
+  };
+  lines.push(csvRow(['__CONFIG__', 'scroll', JSON.stringify(scrollSettings)]));
+
+  // 2f. Music settings
+  const musicSettings = {
+    musicUrl:      settings.musicUrl,
+    autoPlayMusic: settings.autoPlayMusic,
+    loopMusic:     settings.loopMusic,
+    volume:        settings.volume,
+  };
+  lines.push(csvRow(['__CONFIG__', 'music', JSON.stringify(musicSettings)]));
+
+  // 2g. TTS settings
+  const ttsSettings = {
+    ttsEnabled:   settings.ttsEnabled,
+    ttsRate:      settings.ttsRate,
+    ttsPitch:     settings.ttsPitch,
+    ttsVolume:    settings.ttsVolume,
+    ttsGender:    settings.ttsGender,
+    ttsVoiceURI:  settings.ttsVoiceURI,
+    ttsReadMerit: settings.ttsReadMerit,
+  };
+  lines.push(csvRow(['__CONFIG__', 'tts', JSON.stringify(ttsSettings)]));
+
+  const csv = '\uFEFF' + lines.join('\n');
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = 'poya_merit_data_' + new Date().toISOString().slice(0,10) + '.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  setCsvStatus('✓ Exported successfully', true);
+  a.download = 'poya_merit_config_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  setCsvStatus('✓ Exported data + full configuration', true);
 }
 
 function importCSV(event) {
@@ -662,55 +774,137 @@ function importCSV(event) {
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const text = e.target.result.replace(/^\uFEFF/, ''); // strip BOM
-      const lines = text.split(/\r?\n/).filter(l => l.trim());
-      if (lines.length < 2) throw new Error('File appears empty');
+      const text = e.target.result.replace(/^\uFEFF/, '');
+      const rawLines = text.split(/\r?\n/);
 
-      // Parse header row to find column indices
-      const header = parseCSVRow(lines[0]).map(h => h.toLowerCase().trim());
-      const ci = {
-        id:     header.indexOf('section_id'),
-        title:  header.indexOf('section_title'),
-        name:   header.indexOf('name'),
-        merit:  header.indexOf('merit'),
-        custom: header.indexOf('custom'),
-      };
-      if (ci.id < 0 || ci.title < 0) throw new Error('Missing section_id or section_title columns');
+      // Split into data lines and config lines
+      const dataLines   = [];
+      const configLines = [];
+      let headerFound   = false;
+      let ci            = {};
 
-      // Reset sections to defaults, keep custom from file
-      SECTIONS = DEFAULT_SECTIONS.map(s => ({...s, entries:[]}));
-
-      lines.slice(1).forEach(line => {
+      rawLines.forEach(line => {
         if (!line.trim()) return;
         const cells = parseCSVRow(line);
+        if (cells[0] === '__CONFIG__') {
+          configLines.push(cells);
+          return;
+        }
+        if (!headerFound) {
+          // This is the header row
+          const h = cells.map(c => c.toLowerCase().trim());
+          ci = {
+            id:     h.indexOf('section_id'),
+            title:  h.indexOf('section_title'),
+            name:   h.indexOf('name'),
+            merit:  h.indexOf('merit'),
+            custom: h.indexOf('custom'),
+          };
+          if (ci.id < 0 || ci.title < 0) throw new Error('Missing section_id or section_title columns');
+          headerFound = true;
+          return;
+        }
+        dataLines.push(cells);
+      });
+
+      if (!headerFound) throw new Error('No header row found');
+
+      // ── 1. Restore section data ──────────────────────────────
+      SECTIONS = DEFAULT_SECTIONS.map(s => ({...s, entries:[]}));
+      dataLines.forEach(cells => {
         const sid    = (cells[ci.id]    || '').trim();
         const stitle = (cells[ci.title] || '').trim();
         const name   = ci.name  >= 0 ? (cells[ci.name]  || '').trim() : '';
         const merit  = ci.merit >= 0 ? (cells[ci.merit] || '').trim() : '';
-        const isCustom = ci.custom >= 0 ? cells[ci.custom].trim() === '1' : false;
+        const isCustom = ci.custom >= 0 ? (cells[ci.custom]||'').trim() === '1' : false;
         if (!sid) return;
-
         let sec = SECTIONS.find(s => s.id === sid);
         if (!sec) {
           sec = {id: sid, title: stitle || sid, entries: [], custom: isCustom};
           SECTIONS.push(sec);
-          if (settings.sectionVisibility[sid] === undefined)
-            settings.sectionVisibility[sid] = true;
         }
-        // Update title in case it changed
         if (stitle) sec.title = stitle;
         if (name || merit) sec.entries.push({name, merit});
       });
 
+      // Ensure visibility keys for all sections
+      SECTIONS.forEach(s => {
+        if (settings.sectionVisibility[s.id] === undefined)
+          settings.sectionVisibility[s.id] = true;
+      });
+
+      // ── 2. Restore config ────────────────────────────────────
+      let configApplied = [];
+      configLines.forEach(cells => {
+        const key = (cells[1] || '').trim();
+        const val = (cells[2] || '').trim();
+        try {
+          switch (key) {
+            case 'visibility':
+              settings.sectionVisibility = JSON.parse(val);
+              configApplied.push('visibility');
+              break;
+            case 'icon_hidden':
+              settings.sectionIconHidden = JSON.parse(val);
+              configApplied.push('icons');
+              break;
+            case 'slide_manager_enabled':
+              settings.slideManagerEnabled = val === '1';
+              configApplied.push('slide_mgr_flag');
+              break;
+            case 'slide_manager':
+              settings.slideManagerConfig = JSON.parse(val);
+              configApplied.push('slide_mgr');
+              break;
+            case 'display': {
+              const d = JSON.parse(val);
+              Object.assign(settings, d);
+              configApplied.push('display');
+              break;
+            }
+            case 'scroll': {
+              const sc = JSON.parse(val);
+              Object.assign(settings, sc);
+              configApplied.push('scroll');
+              break;
+            }
+            case 'music': {
+              const m = JSON.parse(val);
+              Object.assign(settings, m);
+              configApplied.push('music');
+              break;
+            }
+            case 'tts': {
+              const t = JSON.parse(val);
+              Object.assign(settings, t);
+              configApplied.push('tts');
+              break;
+            }
+          }
+        } catch(parseErr) {
+          console.warn('Config parse error for key:', key, parseErr);
+        }
+      });
+
+      // ── 3. Apply everything ──────────────────────────────────
       saveState();
-      buildSectionEditors();
-      buildSectionToggles();
+      applyDisplaySettings();
+      applyColors();
+      applyMusic();
+      populateAdmin();         // refresh all admin fields
       buildScrollTrack();
-      setCsvStatus('✓ Imported ' + lines.length + ' rows from ' + file.name, true);
+      applySectionBgImage();
+
+      const total = SECTIONS.reduce((a,s) => a+s.entries.length, 0);
+      const configNote = configApplied.length
+        ? ` + config: [${configApplied.join(', ')}]`
+        : ' (no config block found)';
+      setCsvStatus('✓ Imported ' + total + ' entries' + configNote, true);
+
     } catch(err) {
       setCsvStatus('✗ Error: ' + err.message, false);
     }
-    event.target.value = ''; // reset file input
+    event.target.value = '';
   };
   reader.readAsText(file, 'UTF-8');
 }
@@ -1712,7 +1906,7 @@ function updateVolume() {
   audio.volume=v/100;
 }
 function applyMusic() {
-  audio.loop = settings.loopMusic;
+  audio.loop   = settings.loopMusic;
   audio.volume = settings.volume;
 
   if (localMusicBlobUrl) {
@@ -1720,12 +1914,21 @@ function applyMusic() {
     if (!audio.src || audio.src === window.location.href) audio.src = localMusicBlobUrl;
     if (settings.autoPlayMusic && !musicPlaying) {
       audio.play().catch(()=>{});
-      musicPlaying=true; updateMusicBtn();
+      musicPlaying = true; updateMusicBtn();
     }
   } else if (settings.musicUrl && !settings.musicUrl.startsWith('(local')) {
-    audio.src = settings.musicUrl;
-    if (settings.autoPlayMusic) {
-      audio.play().catch(()=>{}); musicPlaying=true; updateMusicBtn();
+    // Always set src so the play button works even when autoPlay is off
+    if (!audio.src || audio.src === window.location.href || audio.src !== settings.musicUrl) {
+      audio.src = settings.musicUrl;
+    }
+    if (settings.autoPlayMusic && !musicPlaying) {
+      // Browsers block autoplay without user interaction — we try and silently catch
+      audio.play().then(() => {
+        musicPlaying = true; updateMusicBtn();
+      }).catch(() => {
+        // Autoplay blocked — user must click the 🎵 button to start
+        musicPlaying = false; updateMusicBtn();
+      });
     }
   }
 }

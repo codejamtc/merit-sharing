@@ -231,6 +231,42 @@ textarea{resize:vertical;min-height:70px;line-height:1.6;}
 .section-icon-s12 .section-icon-img{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2080%2080%27%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2740%27%20cy%3D%2718%27%20r%3D%278%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%272%27/%3E%0A%20%20%20%20%3Cpath%20d%3D%27M26%2042%20Q26%2028%2040%2028%20Q54%2028%2054%2042%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%272%27/%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2716%27%20cy%3D%2726%27%20r%3D%276%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27/%3E%0A%20%20%20%20%3Cpath%20d%3D%27M6%2046%20Q6%2036%2016%2036%20Q26%2036%2026%2046%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27/%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2764%27%20cy%3D%2726%27%20r%3D%276%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27/%3E%0A%20%20%20%20%3Cpath%20d%3D%27M54%2046%20Q54%2036%2064%2036%20Q74%2036%2074%2046%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27/%3E%0A%20%20%20%20%3Cline%20x1%3D%2710%27%20y1%3D%2760%27%20x2%3D%2770%27%20y2%3D%2760%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27%20opacity%3D%27.5%27/%3E%0A%20%20%20%20%3Cline%20x1%3D%2720%27%20y1%3D%2755%27%20x2%3D%2720%27%20y2%3D%2765%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27%20opacity%3D%27.5%27/%3E%0A%20%20%20%20%3Cline%20x1%3D%2740%27%20y1%3D%2755%27%20x2%3D%2740%27%20y2%3D%2765%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27%20opacity%3D%27.5%27/%3E%0A%20%20%20%20%3Cline%20x1%3D%2760%27%20y1%3D%2755%27%20x2%3D%2760%27%20y2%3D%2765%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27%20opacity%3D%27.5%27/%3E%0A%20%20%3C/svg%3E");}
 .section-icon-s13 .section-icon-img{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2080%2080%27%3E%0A%20%20%20%20%3Cpolygon%20points%3D%2740%2C12%2045%2C30%2064%2C30%2049%2C41%2055%2C60%2040%2C49%2025%2C60%2031%2C41%2016%2C30%2035%2C30%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%272%27%20stroke-linejoin%3D%27round%27/%3E%0A%20%20%20%20%3Cpolygon%20points%3D%2740%2C22%2043%2C32%2054%2C32%2045%2C38%2048%2C49%2040%2C43%2032%2C49%2035%2C38%2026%2C32%2037%2C32%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271%27%20opacity%3D%27.4%27/%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2740%27%20cy%3D%2740%27%20r%3D%275%27%20fill%3D%27none%27%20stroke%3D%27%23D4AF37%27%20stroke-width%3D%271.5%27%20opacity%3D%27.6%27/%3E%0A%20%20%3C/svg%3E");}
 
+
+/* ── Slide Manager ── */
+.sm-slide-block{background:rgba(255,255,255,.03);border:1px solid rgba(212,175,55,.18);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.sm-slide-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sm-slide-label{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(212,175,55,.2);border-radius:6px;
+  color:var(--gold);padding:7px 12px;font-size:14px;font-family:'Noto Serif Sinhala',serif;outline:none;}
+.sm-slide-label:focus{border-color:var(--gold);}
+.sm-section-list{display:flex;flex-direction:column;gap:6px;min-height:40px;
+  background:rgba(0,0,0,.15);border:1px dashed rgba(212,175,55,.2);border-radius:6px;padding:8px;}
+.sm-section-chip{display:flex;align-items:center;justify-content:space-between;
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:6px;
+  padding:7px 12px;font-size:13px;color:var(--text-main);font-family:'Noto Serif Sinhala',serif;cursor:grab;}
+.sm-section-chip:active{cursor:grabbing;opacity:.7;}
+.sm-chip-remove{background:none;border:none;color:#f08888;cursor:pointer;font-size:14px;padding:0 0 0 8px;line-height:1;}
+.sm-add-section-row{display:flex;gap:8px;margin-top:8px;}
+.sm-add-section-row select{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(212,175,55,.2);
+  border-radius:6px;color:var(--text-main);padding:8px 10px;font-size:13px;
+  font-family:'Noto Serif Sinhala',serif;outline:none;}
+.sm-add-section-row select:focus{border-color:var(--gold);}
+.sm-add-section-row button{background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);
+  border-radius:6px;color:var(--gold);padding:8px 14px;cursor:pointer;font-size:13px;
+  font-family:'Noto Sans Sinhala',sans-serif;transition:all .2s;white-space:nowrap;}
+.sm-add-section-row button:hover{background:rgba(212,175,55,.28);}
+.sm-empty{font-size:12px;color:var(--text-muted);font-family:'Noto Sans Sinhala',sans-serif;
+  text-align:center;padding:8px;opacity:.6;}
+.sm-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.sm-badge{display:inline-block;font-size:11px;background:rgba(212,175,55,.15);color:var(--gold);
+  padding:3px 9px;border-radius:10px;font-family:sans-serif;margin-left:8px;}
+.sm-unassigned{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.1);
+  border-radius:8px;padding:14px;margin-top:16px;}
+.sm-unassigned h4{font-size:13px;color:var(--text-muted);margin-bottom:10px;font-family:'Noto Sans Sinhala',sans-serif;}
+.sm-unassigned-chip{display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;
+  padding:5px 10px;font-size:12px;color:var(--text-muted);font-family:'Noto Serif Sinhala',serif;
+  margin:3px;cursor:pointer;transition:all .2s;}
+.sm-unassigned-chip:hover{border-color:var(--gold);color:var(--gold);}
 </style>
 </head>
 <body>
@@ -275,6 +311,7 @@ textarea{resize:vertical;min-height:70px;line-height:1.6;}
     <button class="tab-btn" onclick="switchTab('tab-sheets',this)">Google Sheets</button>
     <button class="tab-btn" onclick="switchTab('tab-visibility',this)">Section Visibility</button>
     <button class="tab-btn" onclick="switchTab('tab-settings',this)">Settings</button>
+    <button class="tab-btn" onclick="switchTab('tab-slidemanager',this)">Slide Manager</button>
   </div>
 
   <!-- TAB: DATA -->
@@ -512,6 +549,27 @@ textarea{resize:vertical;min-height:70px;line-height:1.6;}
       </div>
     </div>
   </div>
+  <!-- TAB: SLIDE MANAGER -->
+  <div id="tab-slidemanager" class="tab-pane">
+    <div class="sm-toolbar">
+      <div class="section-toggle-row" style="border:none;padding:0;margin-right:16px;">
+        <span class="toggle-label" style="font-size:14px;font-weight:600;color:var(--gold);margin-right:10px;">Enable Slide Manager</span>
+        <label class="toggle-switch"><input type="checkbox" id="slideManagerEnabled" onchange="smToggleEnabled()"><span class="toggle-slider"></span></label>
+      </div>
+      <button class="btn-export" onclick="smAddSlide()">+ Add Slide</button>
+      <button class="btn-secondary" style="margin-top:0;width:auto;padding:9px 16px;" onclick="smReset()">↺ Reset to Auto</button>
+      <button class="btn-primary" style="width:auto;margin-top:0;padding:10px 20px;" onclick="smSaveAndApply()">💾 Save &amp; Apply</button>
+    </div>
+    <p id="sm-auto-note" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;padding:10px 14px;background:rgba(212,175,55,.06);border-radius:6px;border:1px solid rgba(212,175,55,.15);">
+      ℹ️ <strong>Slide Manager is OFF</strong> — slides are built automatically using the Lines Per Slide setting. Enable it above to manually control which sections appear on each slide.
+    </p>
+    <div id="sm-slides-container"></div>
+    <div class="sm-unassigned" id="sm-unassigned-wrap" style="display:none;">
+      <h4>📋 Unassigned sections (click to add to last slide)</h4>
+      <div id="sm-unassigned-chips"></div>
+    </div>
+  </div>
+
 </div>
 
 <audio id="bgMusic" loop></audio>
@@ -559,6 +617,8 @@ let settings = {
   hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
+  slideManagerEnabled:false,
+  slideManagerConfig:[],  // [{label:'Slide 1', sectionIds:['s1','s2']}]
 };
 
 let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
@@ -839,6 +899,310 @@ function updateTtsVolume() {
   if (el) el.textContent = Math.round(v*100) + '%';
 }
 
+
+// ════════════════════════════════════════════════════════════
+// SLIDE MANAGER
+// settings.slideManagerConfig = [{label, sectionIds:[]}]
+// When slideManagerEnabled=true, buildScrollTrack uses this
+// config instead of the auto-packing algorithm.
+// ════════════════════════════════════════════════════════════
+
+function smGetConfig() {
+  return settings.slideManagerConfig || [];
+}
+
+function smSave() {
+  // Read all slides from DOM
+  const config = [];
+  document.querySelectorAll('.sm-slide-block').forEach(block => {
+    const label = block.querySelector('.sm-slide-label')?.value.trim() || 'Slide';
+    const ids = [];
+    block.querySelectorAll('.sm-section-chip[data-id]').forEach(chip => {
+      ids.push(chip.dataset.id);
+    });
+    config.push({label, sectionIds: ids});
+  });
+  settings.slideManagerConfig = config;
+  settings.slideManagerEnabled = document.getElementById('slideManagerEnabled')?.checked || false;
+}
+
+function smSaveAndApply() {
+  smSave();
+  saveState();
+  buildScrollTrack();
+  applySectionBgImage();
+  setCsvStatus('✓ Slide Manager saved & display updated', true);
+  // flash feedback
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '✓ Applied!';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+
+function smToggleEnabled() {
+  const on = document.getElementById('slideManagerEnabled')?.checked;
+  document.getElementById('sm-auto-note').style.display = on ? 'none' : 'block';
+  document.getElementById('sm-unassigned-wrap').style.display = on ? 'block' : 'none';
+  smRefreshUnassigned();
+}
+
+function smReset() {
+  if (!confirm('Reset Slide Manager? This clears all manual slide assignments.')) return;
+  settings.slideManagerConfig = [];
+  settings.slideManagerEnabled = false;
+  document.getElementById('slideManagerEnabled').checked = false;
+  smToggleEnabled();
+  smBuildUI();
+  saveState();
+  buildScrollTrack();
+}
+
+function smAddSlide(afterIdx) {
+  const config = smGetConfig();
+  const newSlide = {label: 'Slide ' + (config.length + 1), sectionIds: []};
+  if (afterIdx !== undefined) config.splice(afterIdx + 1, 0, newSlide);
+  else config.push(newSlide);
+  settings.slideManagerConfig = config;
+  smBuildUI();
+  smRefreshUnassigned();
+  // Scroll to new slide
+  const blocks = document.querySelectorAll('.sm-slide-block');
+  const target = afterIdx !== undefined ? blocks[afterIdx + 1] : blocks[blocks.length - 1];
+  if (target) setTimeout(() => target.scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+function smRemoveSlide(idx) {
+  const config = smGetConfig();
+  config.splice(idx, 1);
+  settings.slideManagerConfig = config;
+  smBuildUI();
+  smRefreshUnassigned();
+}
+
+function smMoveSlide(idx, dir) {
+  const config = smGetConfig();
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= config.length) return;
+  [config[idx], config[newIdx]] = [config[newIdx], config[idx]];
+  settings.slideManagerConfig = config;
+  smBuildUI();
+}
+
+function smAddSectionToSlide(slideIdx) {
+  const sel = document.getElementById('sm-sec-select-' + slideIdx);
+  if (!sel || !sel.value) return;
+  const config = smGetConfig();
+  if (!config[slideIdx]) return;
+  if (!config[slideIdx].sectionIds.includes(sel.value)) {
+    config[slideIdx].sectionIds.push(sel.value);
+    settings.slideManagerConfig = config;
+    smBuildSlideBlock(slideIdx);
+    smRefreshUnassigned();
+  }
+  sel.value = '';
+}
+
+function smRemoveSectionFromSlide(slideIdx, secId) {
+  const config = smGetConfig();
+  if (!config[slideIdx]) return;
+  config[slideIdx].sectionIds = config[slideIdx].sectionIds.filter(id => id !== secId);
+  settings.slideManagerConfig = config;
+  smBuildSlideBlock(slideIdx);
+  smRefreshUnassigned();
+}
+
+function smAssignUnassigned(secId) {
+  // Add to last slide, or create one if none
+  const config = smGetConfig();
+  if (!config.length) {
+    config.push({label: 'Slide 1', sectionIds: [secId]});
+  } else {
+    if (!config[config.length-1].sectionIds.includes(secId))
+      config[config.length-1].sectionIds.push(secId);
+  }
+  settings.slideManagerConfig = config;
+  smBuildUI();
+  smRefreshUnassigned();
+}
+
+function smGetAssignedIds() {
+  return (settings.slideManagerConfig || []).flatMap(s => s.sectionIds);
+}
+
+function smRefreshUnassigned() {
+  const wrap = document.getElementById('sm-unassigned-chips');
+  if (!wrap) return;
+  const assigned = smGetAssignedIds();
+  const unassigned = SECTIONS.filter(s =>
+    s.entries.length > 0 &&
+    settings.sectionVisibility[s.id] !== false &&
+    !assigned.includes(s.id)
+  );
+  if (!unassigned.length) {
+    wrap.innerHTML = '<span style="font-size:12px;color:#8dcc55;font-family:sans-serif;">✓ All visible sections are assigned</span>';
+  } else {
+    wrap.innerHTML = unassigned.map(s =>
+      `<span class="sm-unassigned-chip" onclick="smAssignUnassigned('${s.id}')" title="Click to add to last slide">${s.title}</span>`
+    ).join('');
+  }
+}
+
+function smBuildSlideBlock(slideIdx) {
+  const container = document.getElementById('sm-slides-container');
+  const config = smGetConfig();
+  const slide = config[slideIdx];
+  if (!slide) return;
+
+  const existing = document.getElementById('sm-block-' + slideIdx);
+  const newBlock = smCreateSlideBlockEl(slideIdx, slide, config.length);
+  if (existing) existing.replaceWith(newBlock);
+  else container.appendChild(newBlock);
+}
+
+function smCreateSlideBlockEl(idx, slide, total) {
+  const block = document.createElement('div');
+  block.className = 'sm-slide-block';
+  block.id = 'sm-block-' + idx;
+
+  // Header row
+  const header = document.createElement('div');
+  header.className = 'sm-slide-header';
+
+  const moveUp = document.createElement('button');
+  moveUp.className = 'btn-secondary';
+  moveUp.style.cssText = 'width:auto;margin:0;padding:6px 10px;font-size:12px;';
+  moveUp.textContent = '▲';
+  moveUp.title = 'Move up';
+  moveUp.disabled = idx === 0;
+  moveUp.addEventListener('click', () => { smSave(); smMoveSlide(idx, -1); });
+
+  const moveDown = document.createElement('button');
+  moveDown.className = 'btn-secondary';
+  moveDown.style.cssText = 'width:auto;margin:0;padding:6px 10px;font-size:12px;';
+  moveDown.textContent = '▼';
+  moveDown.title = 'Move down';
+  moveDown.disabled = idx === total - 1;
+  moveDown.addEventListener('click', () => { smSave(); smMoveSlide(idx, 1); });
+
+  const labelInput = document.createElement('input');
+  labelInput.className = 'sm-slide-label';
+  labelInput.type = 'text';
+  labelInput.value = slide.label || ('Slide ' + (idx + 1));
+  labelInput.placeholder = 'Slide name…';
+
+  const badge = document.createElement('span');
+  badge.className = 'sm-badge';
+  badge.textContent = (slide.sectionIds?.length || 0) + ' section' + (slide.sectionIds?.length === 1 ? '' : 's');
+
+  const addAfterBtn = document.createElement('button');
+  addAfterBtn.className = 'btn-secondary';
+  addAfterBtn.style.cssText = 'width:auto;margin:0;padding:6px 12px;font-size:12px;';
+  addAfterBtn.textContent = '+ After';
+  addAfterBtn.title = 'Insert new slide after this one';
+  addAfterBtn.addEventListener('click', () => { smSave(); smAddSlide(idx); });
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'btn-remove';
+  delBtn.style.cssText = 'padding:6px 10px;font-size:13px;';
+  delBtn.textContent = '🗑';
+  delBtn.title = 'Delete this slide';
+  delBtn.addEventListener('click', () => { smSave(); smRemoveSlide(idx); });
+
+  header.append(moveUp, moveDown, labelInput, badge, addAfterBtn, delBtn);
+  block.appendChild(header);
+
+  // Section chips list
+  const list = document.createElement('div');
+  list.className = 'sm-section-list';
+  list.id = 'sm-list-' + idx;
+
+  if (!slide.sectionIds?.length) {
+    const empty = document.createElement('div');
+    empty.className = 'sm-empty';
+    empty.textContent = 'No sections assigned — add from dropdown below';
+    list.appendChild(empty);
+  } else {
+    slide.sectionIds.forEach(secId => {
+      const sec = SECTIONS.find(s => s.id === secId);
+      const chip = document.createElement('div');
+      chip.className = 'sm-section-chip';
+      chip.dataset.id = secId;
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = sec ? sec.title : secId;
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'sm-chip-remove';
+      removeBtn.textContent = '✕';
+      removeBtn.title = 'Remove from this slide';
+      removeBtn.addEventListener('click', () => { smSave(); smRemoveSectionFromSlide(idx, secId); });
+      chip.append(nameSpan, removeBtn);
+      list.appendChild(chip);
+    });
+  }
+  block.appendChild(list);
+
+  // Add section dropdown
+  const addRow = document.createElement('div');
+  addRow.className = 'sm-add-section-row';
+
+  const sel = document.createElement('select');
+  sel.id = 'sm-sec-select-' + idx;
+  const defOpt = document.createElement('option');
+  defOpt.value = '';
+  defOpt.textContent = '— Add a section to this slide —';
+  sel.appendChild(defOpt);
+
+  SECTIONS.forEach(sec => {
+    if (sec.entries.length === 0 && settings.sectionVisibility[sec.id] === false) return;
+    const opt = document.createElement('option');
+    opt.value = sec.id;
+    const already = slide.sectionIds?.includes(sec.id);
+    opt.textContent = (already ? '✓ ' : '') + sec.title;
+    opt.disabled = already;
+    sel.appendChild(opt);
+  });
+
+  const addBtn2 = document.createElement('button');
+  addBtn2.textContent = '+ Add';
+  addBtn2.addEventListener('click', () => { smSave(); smAddSectionToSlide(idx); smRefreshUnassigned(); });
+
+  addRow.append(sel, addBtn2);
+  block.appendChild(addRow);
+
+  return block;
+}
+
+function smBuildUI() {
+  const container = document.getElementById('sm-slides-container');
+  if (!container) return;
+  container.innerHTML = '';
+  const config = smGetConfig();
+  const enabled = settings.slideManagerEnabled || false;
+  const enEl = document.getElementById('slideManagerEnabled');
+  if (enEl) enEl.checked = enabled;
+
+  document.getElementById('sm-auto-note').style.display = enabled ? 'none' : 'block';
+  document.getElementById('sm-unassigned-wrap').style.display = enabled ? 'block' : 'none';
+
+  if (config.length === 0 && enabled) {
+    // Auto-generate one slide per section as starting point
+    SECTIONS.filter(s => s.entries.length > 0).forEach((sec, i) => {
+      config.push({label: 'Slide ' + (i + 1), sectionIds: [sec.id]});
+    });
+    settings.slideManagerConfig = config;
+  }
+
+  config.forEach((slide, idx) => {
+    container.appendChild(smCreateSlideBlockEl(idx, slide, config.length));
+  });
+
+  smRefreshUnassigned();
+}
+
+// Called when the tab is switched to
+function initSlideManagerTab() {
+  smBuildUI();
+}
+
 // ---- Build display ----
 // Each "line" = 1 name-only entry (counts as 1) or 1 name+merit entry (counts as 2)
 // Section title itself counts as 1 line.
@@ -930,36 +1294,44 @@ function buildScrollTrack() {
     return;
   }
 
-  const maxLines = settings.linesPerSlide || 15;
-  const doSplit  = settings.autoSplitSections !== false;
-
-  // Expand sections: if autoSplit is on, large sections become multiple chunks
-  const expandedSections = [];
-  visible.forEach(sec => {
-    if (doSplit) {
-      splitSectionIntoChunks(sec, maxLines).forEach(chunk => expandedSections.push(chunk));
-    } else {
-      expandedSections.push(sec);
-    }
-  });
-
-  // Pack expanded sections into slides respecting maxLines budget
   let slides = [];
-  let currentSlideGroup = [];
-  let currentLines = 0;
 
-  expandedSections.forEach(sec => {
-    const secLines = sectionLineCount(sec);
-    if (currentSlideGroup.length > 0 && currentLines + secLines > maxLines) {
-      slides.push(currentSlideGroup);
-      currentSlideGroup = [sec];
-      currentLines = secLines;
-    } else {
-      currentSlideGroup.push(sec);
-      currentLines += secLines;
-    }
-  });
-  if (currentSlideGroup.length) slides.push(currentSlideGroup);
+  if (settings.slideManagerEnabled && settings.slideManagerConfig && settings.slideManagerConfig.length) {
+    // ── Manual Slide Manager mode ──
+    settings.slideManagerConfig.forEach(slideConf => {
+      const group = slideConf.sectionIds
+        .map(id => SECTIONS.find(s => s.id === id))
+        .filter(sec => sec && sec.entries.length > 0 && settings.sectionVisibility[sec.id] !== false);
+      if (group.length) slides.push(group);
+    });
+    // Append any visible sections not assigned to any slide
+    const assigned = settings.slideManagerConfig.flatMap(s => s.sectionIds);
+    const unassigned = visible.filter(s => !assigned.includes(s.id));
+    if (unassigned.length) slides.push(unassigned);
+  } else {
+    // ── Auto mode: pack by lines ──
+    const maxLines = settings.linesPerSlide || 15;
+    const doSplit  = settings.autoSplitSections !== false;
+    const expandedSections = [];
+    visible.forEach(sec => {
+      if (doSplit) splitSectionIntoChunks(sec, maxLines).forEach(chunk => expandedSections.push(chunk));
+      else expandedSections.push(sec);
+    });
+    let currentSlideGroup = [];
+    let currentLines = 0;
+    expandedSections.forEach(sec => {
+      const secLines = sectionLineCount(sec);
+      if (currentSlideGroup.length > 0 && currentLines + secLines > maxLines) {
+        slides.push(currentSlideGroup);
+        currentSlideGroup = [sec];
+        currentLines = secLines;
+      } else {
+        currentSlideGroup.push(sec);
+        currentLines += secLines;
+      }
+    });
+    if (currentSlideGroup.length) slides.push(currentSlideGroup);
+  }
 
   slides.forEach(group => {
     const slideDiv = document.createElement('div');
@@ -1120,7 +1492,8 @@ function saveAndRefresh() {
   settings.speed            = parseInt(document.getElementById('speedSlider').value);
   settings.sectionsPerSlide = parseInt(document.getElementById('sectionsPerSlide').value);
   settings.autoLoop          = document.getElementById('autoLoop').checked;
-  settings.autoSplitSections = document.getElementById('autoSplitSections')?.checked ?? true;
+  settings.autoSplitSections  = document.getElementById('autoSplitSections')?.checked ?? true;
+  settings.slideManagerEnabled = document.getElementById('slideManagerEnabled')?.checked ?? false;
   settings.autoPlayMusic    = document.getElementById('autoPlayMusic').checked;
   settings.loopMusic        = document.getElementById('loopMusic').checked;
   settings.volume           = parseInt(document.getElementById('volumeSlider').value)/100;
@@ -1404,6 +1777,7 @@ function switchTab(id,btn) {
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (btn) btn.classList.add('active');
+  if (id === 'tab-slidemanager') initSlideManagerTab();
 }
 
 // ---- Google Sheet import ----

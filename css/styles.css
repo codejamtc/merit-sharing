@@ -195,6 +195,8 @@ select option:hover{
   color:var(--text-muted);padding:9px 18px;font-size:13px;cursor:pointer;
   font-family:'Noto Sans Sinhala',sans-serif;transition:all .2s;margin-top:8px;width:100%;}
 .btn-secondary:hover{border-color:var(--gold);color:var(--gold);}
+.tab-action-buttons{display:flex;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(212,175,55,.1);}
+.tab-action-buttons .btn-secondary,.tab-action-buttons .btn-primary{width:auto;margin-top:0;}
 
 .hint{font-size:11px;color:var(--text-muted);margin-top:-10px;margin-bottom:14px;
   font-family:'Noto Sans Sinhala',sans-serif;opacity:.7;}

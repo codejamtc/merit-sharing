@@ -347,6 +347,48 @@ function saveState() {
   ));
 }
 
+function adminSave() {
+  collectEditorData();
+
+  // Gather row limits from any open inputs
+  if (!settings.sectionRowLimits) settings.sectionRowLimits = {};
+  document.querySelectorAll('[id^="rowlimit-"]').forEach(el => {
+    const sid = el.id.replace('rowlimit-', '');
+    const v = parseInt(el.value) || 0;
+    if (v > 0) settings.sectionRowLimits[sid] = v;
+    else delete settings.sectionRowLimits[sid];
+  });
+
+  // Gather checkbox states that may not be live-updated
+  const autoLoop = document.getElementById('autoLoop');
+  if (autoLoop) settings.autoLoop = autoLoop.checked;
+  const autoSplit = document.getElementById('autoSplitSections');
+  if (autoSplit) settings.autoSplitSections = autoSplit.checked;
+  const smEnabled = document.getElementById('slideManagerEnabled');
+  if (smEnabled) settings.slideManagerEnabled = smEnabled.checked;
+
+  saveState();
+  buildScrollTrack();
+  setCsvStatus('✓ All changes saved', true);
+}
+
+function adminSaveAndDisplay() {
+  adminSave();
+  setTimeout(() => {
+    document.getElementById('admin-panel').classList.remove('active');
+    document.getElementById('display-view').classList.add('active');
+    document.body.classList.remove('admin-mode');
+  }, 300);
+}
+
+function clearStorage() {
+  if (confirm('Are you sure you want to clear ALL data? This cannot be undone.')) {
+    localStorage.removeItem('poya_settings');
+    localStorage.removeItem('poya_data');
+    location.reload();
+  }
+}
+
 
 // ════════════════════════════════════════════════════════════
 // TTS ENGINE  (Web Speech API – free, built into Chrome/Edge)
@@ -511,11 +553,6 @@ function smSaveAndApply() {
   buildScrollTrack();
   applySectionBgImage();
   setCsvStatus('✓ Slide Manager saved & display updated', true);
-  // flash feedback
-  const btn = event.target;
-  const orig = btn.textContent;
-  btn.textContent = '✓ Applied!';
-  setTimeout(() => btn.textContent = orig, 1500);
 }
 
 function smToggleEnabled() {
@@ -780,6 +817,7 @@ function smBuildUI() {
 // Called when the tab is switched to
 function initSlideManagerTab() {
   smBuildUI();
+  buildSectionRowLimitsUI();
 }
 
 // ---- Build display ----
@@ -1556,8 +1594,7 @@ function switchTab(id,btn) {
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (id === 'tab-slidemanager') initSlideManagerTab();
-  if (id === 'tab-visibility') buildSectionRowLimitsUI();
+  if (id === 'tab-slidemanager') { initSlideManagerTab(); buildSectionRowLimitsUI(); }
 }
 
 // ---- Google Sheet import ----

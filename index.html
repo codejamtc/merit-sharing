@@ -56,22 +56,15 @@
     <button class="tab-btn" onclick="switchTab('tab-visibility',this)">Section Visibility</button>
     <button class="tab-btn" onclick="switchTab('tab-settings',this)">Settings</button>
     <button class="tab-btn" onclick="switchTab('tab-slidemanager',this)">Slide Manager</button>
+    <button class="tab-btn" onclick="switchTab('tab-importexport',this)">Import &amp; Export</button>
   </div>
 
   <!-- TAB: DATA -->
   <div id="tab-data" class="tab-pane active">
-    <!-- Export / Import CSV toolbar -->
-    <div class="data-toolbar">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
-        <button class="btn-export" onclick="exportCSV()">⬇️ Export Data (CSV)</button>
-        <label class="btn-import-label">
-          📂 Import Data (CSV)
-          <input type="file" id="importCsvFile" accept=".csv,.txt" onchange="importCSV(event)" style="display:none;">
-        </label>
-        <span id="csv-status" style="font-size:12px;color:var(--text-muted);font-family:'Noto Sans Sinhala',sans-serif;"></span>
-      </div>
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
     </div>
-
     <!-- Add new section -->
     <div class="add-section-form">
       <h4>➕ Add New Section</h4>
@@ -81,11 +74,14 @@
       </div>
     </div>
     <div id="section-editors"></div>
-    <button class="btn-primary" onclick="saveAndRefresh()" style="max-width:320px;margin:0 auto 32px;display:block;">💾 Save &amp; Refresh Display</button>
   </div>
 
   <!-- TAB: SHEETS -->
   <div id="tab-sheets" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
     <div class="admin-grid">
       <div class="admin-card">
         <h3>📊 Google Sheets Import</h3>
@@ -112,6 +108,10 @@
 
   <!-- TAB: SECTION VISIBILITY -->
   <div id="tab-visibility" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;">
       <div class="admin-card" style="grid-column:1/-1;">
         <h3>🎨 Section Header Decoration</h3>
@@ -140,22 +140,15 @@
         <p style="font-size:11px;color:var(--text-muted);margin:16px 0 8px;font-family:sans-serif;border-top:1px solid rgba(212,175,55,.1);padding-top:12px;">🖼️ Section Background Images</p>
         <div id="section-bg-images"></div>
       </div>
-
-      <div class="admin-card" style="grid-column:1/-1;">
-        <h3>📋 Names-Per-Slide Limit <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:8px;">(for name-list sections)</span></h3>
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-family:'Noto Sans Sinhala',sans-serif;">
-          Set how many names to show per slide for sections that display a two-column name list.
-          When the list exceeds this number, it automatically continues on the next slide with the same section title.
-          Set to <strong style="color:var(--gold);">0</strong> to use the global "Lines per slide" setting.
-        </p>
-        <div id="section-row-limits"></div>
-        <button class="btn-primary" onclick="saveRowLimitsAndApply()" style="max-width:260px;margin-top:8px;">💾 Save &amp; Apply</button>
-      </div>
     </div>
   </div>
 
   <!-- TAB: SETTINGS -->
   <div id="tab-settings" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
     <div class="admin-grid">
       <div class="admin-card">
         <h3>⏱️ Scroll Timing</h3>
@@ -308,22 +301,80 @@
   </div>
   <!-- TAB: SLIDE MANAGER -->
   <div id="tab-slidemanager" class="tab-pane">
-    <div class="sm-toolbar">
-      <div class="section-toggle-row" style="border:none;padding:0;margin-right:16px;">
-        <span class="toggle-label" style="font-size:14px;font-weight:600;color:var(--gold);margin-right:10px;">Enable Slide Manager</span>
-        <label class="toggle-switch"><input type="checkbox" id="slideManagerEnabled" onchange="smToggleEnabled()"><span class="toggle-slider"></span></label>
-      </div>
-      <button class="btn-export" onclick="smAddSlide()">+ Add Slide</button>
-      <button class="btn-secondary" style="margin-top:0;width:auto;padding:9px 16px;" onclick="smReset()">↺ Reset to Auto</button>
-      <button class="btn-primary" style="width:auto;margin-top:0;padding:10px 20px;" onclick="smSaveAndApply()">💾 Save &amp; Apply</button>
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
     </div>
-    <p id="sm-auto-note" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;padding:10px 14px;background:rgba(212,175,55,.06);border-radius:6px;border:1px solid rgba(212,175,55,.15);">
-      ℹ️ <strong>Slide Manager is OFF</strong> — slides are built automatically using the Lines Per Slide setting. Enable it above to manually control which sections appear on each slide.
-    </p>
-    <div id="sm-slides-container"></div>
-    <div class="sm-unassigned" id="sm-unassigned-wrap" style="display:none;">
-      <h4>📋 Unassigned sections (click to add to last slide)</h4>
-      <div id="sm-unassigned-chips"></div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px;">
+      <div>
+        <div class="admin-card">
+          <h3>📋 Names Per Slide <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:8px;">(per section)</span></h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-family:'Noto Sans Sinhala',sans-serif;">
+            Set how many names to show per slide for each section.
+            When the list exceeds this number, it continues on the next slide with the section title.
+            Set to <strong style="color:var(--gold);">0</strong> to use the global "Lines per slide" setting.
+          </p>
+          <div id="section-row-limits"></div>
+          <button class="btn-primary" onclick="saveRowLimitsAndApply()" style="max-width:200px;margin-top:12px;">💾 Save Limits</button>
+        </div>
+      </div>
+      <div>
+        <div class="sm-toolbar">
+          <div class="section-toggle-row" style="border:none;padding:0;margin-right:16px;">
+            <span class="toggle-label" style="font-size:14px;font-weight:600;color:var(--gold);margin-right:10px;">Enable Slide Manager</span>
+            <label class="toggle-switch"><input type="checkbox" id="slideManagerEnabled" onchange="smToggleEnabled()"><span class="toggle-slider"></span></label>
+          </div>
+          <button class="btn-export" onclick="smAddSlide()">+ Add Slide</button>
+          <button class="btn-secondary" style="margin-top:0;width:auto;padding:9px 16px;" onclick="smReset()">↺ Reset to Auto</button>
+          <button class="btn-primary" style="width:auto;margin-top:0;padding:10px 20px;" onclick="smSaveAndApply()">💾 Save Slides</button>
+        </div>
+        <p id="sm-auto-note" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;padding:10px 14px;background:rgba(212,175,55,.06);border-radius:6px;border:1px solid rgba(212,175,55,.15);">
+          ℹ️ <strong>Slide Manager is OFF</strong> — slides are built automatically using the Lines Per Slide setting. Enable it above to manually control which sections appear on each slide.
+        </p>
+        <div id="sm-slides-container"></div>
+        <div class="sm-unassigned" id="sm-unassigned-wrap" style="display:none;">
+          <h4>📋 Unassigned sections (click to add to last slide)</h4>
+          <div id="sm-unassigned-chips"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: IMPORT & EXPORT -->
+  <div id="tab-importexport" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h3>📥 Import Data &amp; Configuration</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Import section data (names, merits) and all configuration settings from a CSV file.
+          This will replace all current data and settings.
+        </p>
+        <label class="btn-import-label" style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:8px;cursor:pointer;transition:all .2s;">
+          📂 Import CSV File
+          <input type="file" id="importCsvFile" accept=".csv,.txt" onchange="importCSV(event)" style="display:none;">
+        </label>
+        <span id="csv-status" style="font-size:12px;color:var(--text-muted);margin-left:12px;font-family:'Noto Sans Sinhala',sans-serif;"></span>
+      </div>
+      <div class="admin-card">
+        <h3>📤 Export Data &amp; Configuration</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Export all section data (names, merits) and configuration settings to a CSV file.
+          The file can be used as backup or to restore the app state.
+        </p>
+        <button class="btn-export" onclick="exportCSV()">⬇️ Export All (Data + Config)</button>
+      </div>
+      <div class="admin-card">
+        <h3>💾 Storage Info</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;font-family:'Noto Sans Sinhala',sans-serif;">
+          All settings and data are automatically saved to browser localStorage.
+          You can also manually save changes using the buttons at the bottom of each tab.
+        </p>
+        <button class="btn-secondary" onclick="clearStorage()" style="background:rgba(200,80,80,.1);border-color:rgba(200,80,80,.3);color:#cc6666;">🗑️ Clear All Data</button>
+      </div>
     </div>
   </div>
 

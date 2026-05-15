@@ -1368,12 +1368,25 @@ function toggleSectionBgEnabled(secId, enabled) {
   settings.sectionBgImageEnabled[secId] = enabled;
   saveState();
   buildScrollTrack();
+  applySectionBgImage(); // Apply the background image to display
   setCsvStatus('✓ Section background updated', true);
 }
 
 function handleSectionBgUpload(secId, input) {
   const file = input.files[0];
   if (!file) return;
+
+  // Validate file type
+  if (!file.type.match(/image.*/)) {
+    setCsvStatus('⚠️ Please select a valid image file', false);
+    return;
+  }
+
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    setCsvStatus('⚠️ Image too large (max 5MB)', false);
+    return;
+  }
 
   const reader = new FileReader();
   reader.onload = function(e) {
@@ -1382,7 +1395,13 @@ function handleSectionBgUpload(secId, input) {
     saveState();
     buildSectionBgImages();
     buildScrollTrack();
+    applySectionBgImage(); // Apply the background image to display
+    // Clear the file input so the same file can be selected again
+    input.value = '';
     setCsvStatus('✓ Background image uploaded', true);
+  };
+  reader.onerror = function() {
+    setCsvStatus('⚠️ Error reading file', false);
   };
   reader.readAsDataURL(file);
 }
@@ -1392,11 +1411,20 @@ function setSectionBgUrl(secId, url) {
     clearSectionBg(secId);
     return;
   }
+
+  // Basic URL validation
+  try {
+    new URL(url.trim());
+  } catch (e) {
+    // Not a valid URL, treat as plain string (could be base64 or relative path)
+  }
+
   if (!settings.sectionBgImage) settings.sectionBgImage = {};
   settings.sectionBgImage[secId] = url.trim();
   saveState();
   buildSectionBgImages();
   buildScrollTrack();
+  applySectionBgImage(); // Apply the background image to display
   setCsvStatus('✓ Background URL saved', true);
 }
 
@@ -1410,6 +1438,7 @@ function clearSectionBg(secId) {
   saveState();
   buildSectionBgImages();
   buildScrollTrack();
+  applySectionBgImage(); // Apply the background image to display
   setCsvStatus('✓ Background cleared', true);
 }
 

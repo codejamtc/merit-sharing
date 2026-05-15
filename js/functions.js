@@ -12,10 +12,10 @@ const ICONS = {
 // Default section background images (GitHub raw URLs)
 const DEFAULT_BG_IMAGES = {
   's1': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/morning-dana.png',
-  's2': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/lunch-dana.png',
+  's2': 'https://github.com/codejamtc/merit-sharing/blob/add-split-function-to-the-other-section/assets/img/lunch-dana.png',
   's3': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/dhamma-hall.png',
   's4': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/sound-led.png',
-  's5': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/ice-cream.png',
+  's5': 'https://github.com/codejamtc/merit-sharing/blob/add-split-function-to-the-other-section/assets/img/ice-cream.png',
   's6': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/banana.png',
   's7': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/Gilanpasa.png',
   's8': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/flowers.png',
@@ -114,6 +114,8 @@ function exportCSV() {
   lines.push(csvRow(['__CONFIG__', 'slide_manager_enabled', settings.slideManagerEnabled ? '1' : '0']));
   lines.push(csvRow(['__CONFIG__', 'slide_manager', JSON.stringify(settings.slideManagerConfig||[])]));
   lines.push(csvRow(['__CONFIG__', 'section_row_limits', JSON.stringify(settings.sectionRowLimits||{})]));
+  lines.push(csvRow(['__CONFIG__', 'section_bg_image', JSON.stringify(settings.sectionBgImage||{})]));
+  lines.push(csvRow(['__CONFIG__', 'section_bg_enabled', JSON.stringify(settings.sectionBgImageEnabled||{})]));
   lines.push(csvRow(['__CONFIG__', 'section_bg_opacity', JSON.stringify(settings.sectionBgImageOpacity||{})]));
 
   // 2d. Display settings (text, colors, subtitles, visibility)
@@ -294,6 +296,14 @@ function importCSV(event) {
             case 'section_bg_opacity':
               settings.sectionBgImageOpacity = JSON.parse(val);
               configApplied.push('bg_opacity');
+              break;
+            case 'section_bg_image':
+              settings.sectionBgImage = JSON.parse(val);
+              configApplied.push('bg_image');
+              break;
+            case 'section_bg_enabled':
+              settings.sectionBgImageEnabled = JSON.parse(val);
+              configApplied.push('bg_enabled');
               break;
           }
         } catch(parseErr) {

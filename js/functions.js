@@ -59,7 +59,14 @@ let settings = {
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
-  slideManagerConfig:[],  // [{label:'Slide 1', sectionIds:['s1','s2']}]
+  slideManagerConfig:[
+    {label:'Slide 1', sectionIds:['s1','s2']},
+    {label:'Slide 2', sectionIds:['s3','s4','s5']},
+    {label:'Slide 3', sectionIds:['s6','s7','s8']},
+    {label:'Slide 4', sectionIds:['s9','s10','s11']},
+    {label:'Slide 5', sectionIds:['s12']},
+    {label:'Slide 6', sectionIds:['s13']}
+  ],
   sectionRowLimits:{},   // {secId: maxNamesPerSlide}
 };
 

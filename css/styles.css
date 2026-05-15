@@ -94,6 +94,15 @@ body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--t
   transition:all .3s;opacity:.45;line-height:1;}
 .admin-btn:hover{opacity:1;background:rgba(26,46,69,.92);border-color:rgba(212,175,55,.5);color:var(--gold);}
 
+/* Navigation buttons */
+.nav-btn{position:fixed;bottom:20px;padding:10px 14px;
+  background:rgba(26,46,69,.55);border:1px solid rgba(212,175,55,.18);border-radius:8px;
+  color:rgba(200,169,110,.55);font-size:16px;cursor:pointer;z-index:100;
+  transition:all .3s;opacity:.45;line-height:1;}
+.nav-btn:hover{opacity:1;background:rgba(26,46,69,.92);border-color:rgba(212,175,55,.5);color:var(--gold);}
+.nav-prev{left:20px;}
+.nav-next{left:70px;}
+
 /* ===== ADMIN ===== */
 #admin-view{display:none;min-height:100vh;background:#0d1b2a;padding:24px;}
 .admin-header{display:flex;align-items:center;justify-content:space-between;

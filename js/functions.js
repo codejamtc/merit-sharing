@@ -38,7 +38,7 @@ let settings = {
   subLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
   footerText:'කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය',
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
-  hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{},
+  hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -802,7 +802,17 @@ function buildSectionHTML(sec) {
   const contBadge = sec._continued
     ? `<span style="font-size:0.55em;opacity:.65;margin-left:12px;font-weight:400;vertical-align:middle;">(cont.)</span>`
     : '';
-  let h = `<div class="section-title-bar ${iconClass}" style="${titlePad}">${iconSpan}<h2>${sec.title}${contBadge}</h2></div>`;
+
+  // Section background image
+  const bgEnabled = settings.sectionBgImageEnabled && settings.sectionBgImageEnabled[sec.id];
+  const bgImage = settings.sectionBgImage && settings.sectionBgImage[sec.id];
+  const bgStyle = (bgEnabled && bgImage)
+    ? `background-image:url(${bgImage});background-size:cover;background-position:center;opacity:0.35;position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;`
+    : '';
+  const bgContainer = bgStyle ? `<div style="${bgStyle}"></div>` : '';
+
+  let h = `<div class="section-container" style="position:relative;">${bgContainer}`;
+  h += `<div class="section-title-bar ${iconClass}" style="${titlePad}">${iconSpan}<h2>${sec.title}${contBadge}</h2></div>`;
   if (nameOnly) {
     h += '<div class="names-two-col">';
     sec.entries.forEach(e => {
@@ -818,6 +828,7 @@ function buildSectionHTML(sec) {
       </div>`;
     });
   }
+  h += '</div>';
   return h;
 }
 
@@ -1279,6 +1290,89 @@ function buildSectionToggles() {
     row.appendChild(iconSwitch);
     c.appendChild(row);
   });
+  buildSectionBgImages();
+}
+
+// Section background image handling
+function buildSectionBgImages() {
+  const c = document.getElementById('section-bg-images');
+  if (!c) return;
+  c.innerHTML = '';
+  SECTIONS.forEach(sec => {
+    const row = document.createElement('div');
+    row.style.cssText = 'padding:10px 0;border-bottom:1px solid rgba(212,175,55,.07);';
+
+    const enabled = settings.sectionBgImageEnabled && settings.sectionBgImageEnabled[sec.id];
+    const bgImage = settings.sectionBgImage && settings.sectionBgImage[sec.id];
+
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+        <span style="font-size:13px;color:var(--text-main);font-family:'Noto Sans Sinhala',sans-serif;flex:1;">${sec.title}</span>
+        <label class="toggle-switch" style="flex-shrink:0;">
+          <input type="checkbox" id="bg-enabled-${sec.id}" ${enabled ? 'checked' : ''} onchange="toggleSectionBgEnabled('${sec.id}', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="file" id="bg-upload-${sec.id}" accept="image/*" style="display:none;" onchange="handleSectionBgUpload('${sec.id}', this)">
+        <button onclick="document.getElementById('bg-upload-${sec.id}').click()" style="padding:6px 12px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:5px;color:var(--gold);cursor:pointer;font-size:12px;">📁 Upload</button>
+        <input type="text" id="bg-url-${sec.id}" value="${bgImage || ''}" placeholder="Or paste image URL..." style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.15);border-radius:4px;color:var(--text-main);padding:5px 8px;font-size:12px;" onchange="setSectionBgUrl('${sec.id}', this.value)">
+        ${bgImage ? `<img src="${bgImage}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid rgba(212,175,55,.3);">` : ''}
+        ${bgImage ? `<button onclick="clearSectionBg('${sec.id}')" style="padding:4px 8px;background:rgba(200,50,50,.1);border:1px solid rgba(200,50,50,.3);border-radius:4px;color:#cc4444;cursor:pointer;font-size:11px;">✕</button>` : ''}
+      </div>
+    `;
+    c.appendChild(row);
+  });
+}
+
+function toggleSectionBgEnabled(secId, enabled) {
+  if (!settings.sectionBgImageEnabled) settings.sectionBgImageEnabled = {};
+  settings.sectionBgImageEnabled[secId] = enabled;
+  saveState();
+  buildScrollTrack();
+  setCsvStatus('✓ Section background updated', true);
+}
+
+function handleSectionBgUpload(secId, input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    if (!settings.sectionBgImage) settings.sectionBgImage = {};
+    settings.sectionBgImage[secId] = e.target.result;
+    saveState();
+    buildSectionBgImages();
+    buildScrollTrack();
+    setCsvStatus('✓ Background image uploaded', true);
+  };
+  reader.readAsDataURL(file);
+}
+
+function setSectionBgUrl(secId, url) {
+  if (!url.trim()) {
+    clearSectionBg(secId);
+    return;
+  }
+  if (!settings.sectionBgImage) settings.sectionBgImage = {};
+  settings.sectionBgImage[secId] = url.trim();
+  saveState();
+  buildSectionBgImages();
+  buildScrollTrack();
+  setCsvStatus('✓ Background URL saved', true);
+}
+
+function clearSectionBg(secId) {
+  if (settings.sectionBgImage && settings.sectionBgImage[secId]) {
+    delete settings.sectionBgImage[secId];
+  }
+  if (settings.sectionBgImageEnabled && settings.sectionBgImageEnabled[secId]) {
+    settings.sectionBgImageEnabled[secId] = false;
+  }
+  saveState();
+  buildSectionBgImages();
+  buildScrollTrack();
+  setCsvStatus('✓ Background cleared', true);
 }
 
 function buildSectionEditors() {

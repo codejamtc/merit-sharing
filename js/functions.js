@@ -9,6 +9,23 @@ const ICONS = {
 };
 
 // ---- Default sections ----
+// Default section background images (GitHub raw URLs)
+const DEFAULT_BG_IMAGES = {
+  's1': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/morning-dana.png',
+  's2': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/lunch-dana.png',
+  's3': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/dhamma-hall.png',
+  's4': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/sound-led.png',
+  's5': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/ice-cream.png',
+  's6': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/banana.png',
+  's7': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/Gilanpasa.png',
+  's8': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/flowers.png',
+  's9': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/transportation.jpeg',
+  's10': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/monk-transport.png',
+  's11': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/other-contribution.png',
+  's12': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/organizing%20committee.png',
+  's13': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/special-thanks.png',
+};
+
 const DEFAULT_SECTIONS = [
   {id:'s1', title:'උදෑසන දානය සඳහා දායකත්වය'},
   {id:'s2', title:'දහවල් දානය සඳහා දායකත්වය'},
@@ -336,6 +353,20 @@ function loadState() {
     SECTIONS.forEach(s => {
       if (settings.sectionVisibility[s.id] === undefined)
         settings.sectionVisibility[s.id] = true;
+    });
+
+    // Initialize default background images if not set by user
+    if (!settings.sectionBgImage) settings.sectionBgImage = {};
+    if (!settings.sectionBgImageEnabled) settings.sectionBgImageEnabled = {};
+
+    // Apply default background images for each section that doesn't have a custom image
+    Object.keys(DEFAULT_BG_IMAGES).forEach(secId => {
+      // Set default image if user hasn't uploaded a custom one
+      if (!settings.sectionBgImage[secId]) {
+        settings.sectionBgImage[secId] = DEFAULT_BG_IMAGES[secId];
+        // Also enable it by default
+        settings.sectionBgImageEnabled[secId] = true;
+      }
     });
   } catch(e) {}
 }

@@ -55,7 +55,7 @@ let settings = {
   subLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
   footerText:'කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය',
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
-  hideSubtitleAfter:1, showSectionBgImage:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
+  hideSubtitleAfter:1, showSectionBgImage:true, showSectionDharmaWheel:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -142,6 +142,7 @@ function exportCSV() {
     autoSplitSections:  settings.autoSplitSections,
     hideSubtitleAfter:  settings.hideSubtitleAfter,
     showSectionBgImage: settings.showSectionBgImage,
+    showSectionDharmaWheel: settings.showSectionDharmaWheel,
   };
   lines.push(csvRow(['__CONFIG__', 'scroll', JSON.stringify(scrollSettings)]));
 
@@ -1149,11 +1150,23 @@ function toggleSectionBgImage() {
   }
 }
 
+function toggleSectionDharmaWheel() {
+  const cb = document.getElementById('showSectionDharmaWheel');
+  settings.showSectionDharmaWheel = cb ? cb.checked : true;
+  const track = document.getElementById('scroll-track');
+  if (track) {
+    if (settings.showSectionDharmaWheel) track.classList.remove('dharma-wheel-off');
+    else track.classList.add('dharma-wheel-off');
+  }
+}
+
 function applySectionBgImage() {
   const track = document.getElementById('scroll-track');
   if (!track) return;
   if (settings.showSectionBgImage !== false) track.classList.remove('section-bg-off');
   else track.classList.add('section-bg-off');
+  if (settings.showSectionDharmaWheel !== false) track.classList.remove('dharma-wheel-off');
+  else track.classList.add('dharma-wheel-off');
 }
 
 // ---- Admin navigation ----
@@ -1188,6 +1201,7 @@ function populateAdmin() {
   const mfStatus=document.getElementById('music-file-status');
   if(mfStatus && localMusicBlobUrl && settings.musicUrl && settings.musicUrl.startsWith('(local:')) mfStatus.textContent='✓ '+settings.musicUrl.slice(7,settings.musicUrl.length-1)+' (loaded in memory)';
   const sbg2=document.getElementById('showSectionBgImage'); if(sbg2) sbg2.checked=settings.showSectionBgImage!==false;
+  const sdw=document.getElementById('showSectionDharmaWheel'); if(sdw) sdw.checked=settings.showSectionDharmaWheel!==false;
   const ct=document.getElementById('colorTitle');         if(ct)  ct.value=settings.colorTitle||'#D4AF37';
   const cs=document.getElementById('colorSubtitle');      if(cs)  cs.value=settings.colorSubtitle||'#C8A96E';
   const cst=document.getElementById('colorSectionTitle'); if(cst) cst.value=settings.colorSectionTitle||'#F0D060';
@@ -1226,6 +1240,7 @@ function saveAndRefresh() {
   settings.linesPerSlide      = parseInt(document.getElementById('linesPerSlide').value)||15;
   settings.hideSubtitleAfter  = parseInt(document.getElementById('hideSubtitleAfter').value)||0;
   const sbg=document.getElementById('showSectionBgImage'); if(sbg) settings.showSectionBgImage=sbg.checked;
+  const sdw=document.getElementById('showSectionDharmaWheel'); if(sdw) settings.showSectionDharmaWheel=sdw.checked;
   // sectionIconHidden is updated live via toggleSectionIcon(), no extra read needed
   settings.ttsEnabled   = document.getElementById('ttsEnabled')?.checked ?? false;
   settings.ttsRate      = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85);

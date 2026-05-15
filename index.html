@@ -152,37 +152,6 @@
       <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
     </div>
     <div class="admin-grid">
-      <div class="admin-card">
-        <h3>⏱️ Scroll Timing</h3>
-        <label class="field-label">Seconds per slide</label>
-        <input type="range" id="speedSlider" min="3" max="60" value="10" oninput="updateSpeed()">
-        <div class="speed-display"><span>3s</span><span id="speedVal" style="color:var(--gold);">10s per slide</span><span>60s</span></div>
-        <label class="field-label">Lines per slide (section title + entries)</label>
-        <input type="range" id="linesPerSlide" min="5" max="40" value="15" step="1" oninput="updateLinesPerSlide()">
-        <div class="speed-display"><span>5</span><span id="linesPerSlideVal" style="color:var(--gold);">15 lines</span><span>40</span></div>
-        <p class="hint" style="margin-top:-6px;">Each name = 1 line. Name + merit = 2 lines. Section title = 1 line. Name-only two-col = 0.5 per name.</p>
-        <label class="field-label">Sections per slide (max sections to group)</label>
-        <input type="range" id="sectionsPerSlide" min="1" max="5" value="2" step="1" oninput="updateSectionsPerSlide()">
-        <div class="speed-display"><span>1</span><span id="sectionsPerSlideVal" style="color:var(--gold);">2 per slide</span><span>5</span></div>
-        <div class="section-toggle-row" style="border:none;padding-top:0;">
-          <span class="toggle-label">Auto-loop</span>
-          <label class="toggle-switch"><input type="checkbox" id="autoLoop" checked><span class="toggle-slider"></span></label>
-        </div>
-        <div class="section-toggle-row" style="border:none;padding-top:8px;">
-          <span class="toggle-label">Auto-split large sections across slides</span>
-          <label class="toggle-switch"><input type="checkbox" id="autoSplitSections" checked><span class="toggle-slider"></span></label>
-        </div>
-        <p class="hint" style="margin-top:-4px;">When ON, a section with too many entries is automatically spread across multiple slides so no scrolling is needed. Each slide respects the "Lines per slide" limit above.</p>
-        <label class="field-label" style="margin-top:4px;">Hide subtitles after slide #</label>
-        <input type="range" id="hideSubtitleAfter" min="0" max="20" value="3" step="1" oninput="updateHideSubtitle()">
-        <div class="speed-display">
-          <span>Never (0)</span>
-          <span id="hideSubtitleVal" style="color:var(--gold);">After slide 3</span>
-          <span>Slide 20</span>
-        </div>
-        <p class="hint" style="margin-top:-6px;">0 = always show. Subtitles fade out after the Nth slide and return on loop.</p>
-      </div>
-
       <div class="admin-card" style="grid-column:1/-1;">
         <h3>🗣️ Text-to-Speech (TTS)</h3>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-family:'Noto Sans Sinhala',sans-serif;">
@@ -325,6 +294,36 @@
           <button class="btn-export" onclick="smAddSlide()">+ Add Slide</button>
           <button class="btn-secondary" style="margin-top:0;width:auto;padding:9px 16px;" onclick="smReset()">↺ Reset to Auto</button>
           <button class="btn-primary" style="width:auto;margin-top:0;padding:10px 20px;" onclick="smSaveAndApply()">💾 Save Slides</button>
+        </div>
+        <div class="admin-card" style="margin:16px 0;padding:16px;background:rgba(42,42,42,.5);border:1px solid rgba(212,175,55,.15);border-radius:8px;">
+          <h3 style="margin:0 0 14px 0;font-size:16px;color:var(--gold);">⏱️ Scroll Timing</h3>
+          <label class="field-label">Seconds per slide</label>
+          <input type="range" id="speedSlider" min="3" max="60" value="10" oninput="updateSpeed()">
+          <div class="speed-display"><span>3s</span><span id="speedVal" style="color:var(--gold);">10s per slide</span><span>60s</span></div>
+          <label class="field-label">Lines per slide (section title + entries)</label>
+          <input type="range" id="linesPerSlide" min="5" max="40" value="15" step="1" oninput="updateLinesPerSlide()">
+          <div class="speed-display"><span>5</span><span id="linesPerSlideVal" style="color:var(--gold);">15 lines</span><span>40</span></div>
+          <p class="hint" style="margin-top:-6px;">Each name = 1 line. Name + merit = 2 lines. Section title = 1 line. Name-only two-col = 0.5 per name.</p>
+          <label class="field-label">Sections per slide (max sections to group)</label>
+          <input type="range" id="sectionsPerSlide" min="1" max="5" value="2" step="1" oninput="updateSectionsPerSlide()">
+          <div class="speed-display"><span>1</span><span id="sectionsPerSlideVal" style="color:var(--gold);">2 per slide</span><span>5</span></div>
+          <div class="section-toggle-row" style="border:none;padding-top:0;">
+            <span class="toggle-label">Auto-loop</span>
+            <label class="toggle-switch"><input type="checkbox" id="autoLoop" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="section-toggle-row" style="border:none;padding-top:8px;">
+            <span class="toggle-label">Auto-split large sections across slides</span>
+            <label class="toggle-switch"><input type="checkbox" id="autoSplitSections" checked><span class="toggle-slider"></span></label>
+          </div>
+          <p class="hint" style="margin-top:-4px;">When ON, a section with too many entries is automatically spread across multiple slides so no scrolling is needed. Each slide respects the "Lines per slide" limit above.</p>
+          <label class="field-label" style="margin-top:4px;">Hide subtitles after slide #</label>
+          <input type="range" id="hideSubtitleAfter" min="0" max="20" value="3" step="1" oninput="updateHideSubtitle()">
+          <div class="speed-display">
+            <span>Never (0)</span>
+            <span id="hideSubtitleVal" style="color:var(--gold);">After slide 3</span>
+            <span>Slide 20</span>
+          </div>
+          <p class="hint" style="margin-top:-6px;">0 = always show. Subtitles fade out after the Nth slide and return on loop.</p>
         </div>
         <p id="sm-auto-note" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;padding:10px 14px;background:rgba(212,175,55,.06);border-radius:6px;border:1px solid rgba(212,175,55,.15);">
           ℹ️ <strong>Slide Manager is OFF</strong> — slides are built automatically using the Lines Per Slide setting. Enable it above to manually control which sections appear on each slide.

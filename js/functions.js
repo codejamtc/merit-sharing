@@ -800,7 +800,7 @@ function buildSectionHTML(sec) {
     : '';
   const titlePad = hasIcon ? 'padding-left:76px;' : '';
   const contBadge = sec._continued
-    ? `<span style="font-size:0.55em;opacity:.65;margin-left:12px;font-weight:400;vertical-align:middle;">(cont.)</span>`
+    ? `<span style="font-size:0.5em;opacity:.5;margin-left:14px;font-weight:400;vertical-align:middle;background:rgba(212,175,55,.1);padding:2px 8px;border-radius:4px;">continued</span>`
     : '';
 
   // Section background image
@@ -845,13 +845,13 @@ function sectionLineCount(sec) {
 }
 
 // Split a section into chunks that each fit within maxLines.
-// For name-only sections: optionally use a per-section row limit.
+// For sections with a row limit: use per-section limit; otherwise use global maxLines.
 // Returns array of virtual section objects with a subset of entries.
 function splitSectionIntoChunks(sec, maxLines) {
   const nameOnly = NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly;
 
-  // Per-section row limit overrides global lines budget for name-only sections
-  const perSecLimit = (nameOnly && settings.sectionRowLimits && settings.sectionRowLimits[sec.id])
+  // Per-section row limit overrides global lines budget for any section that has it set
+  const perSecLimit = (settings.sectionRowLimits && settings.sectionRowLimits[sec.id])
     ? parseInt(settings.sectionRowLimits[sec.id])
     : null;
 
@@ -863,8 +863,10 @@ function splitSectionIntoChunks(sec, maxLines) {
     const cost = nameOnly ? 0.5 : calcEntryLines(entry, false);
 
     // Use per-section name limit if set, otherwise use global lines budget
+    // For name-only: perSecLimit names = perSecLimit/2 entries, each costs 0.5 lines, so limit = perSecLimit/4 + 1
+    // For regular: perSecLimit names = perSecLimit entries, each costs 2 lines, so limit = perSecLimit*2 + 1
     const limit = perSecLimit !== null
-      ? (perSecLimit / 2 + 1)   // perSecLimit names → /2 because two-col, +1 for title
+      ? (nameOnly ? (perSecLimit / 4 + 1) : (perSecLimit * 2 + 1))
       : maxLines;
 
     if (chunk.length > 0 && lines + cost > limit) {
@@ -1197,14 +1199,13 @@ function buildSectionRowLimitsUI() {
   if (!c) return;
   c.innerHTML = '';
 
-  // Show all name-only sections AND any visible section with >10 entries
+  // Show all visible sections with entries (for setting row limits)
   const targets = SECTIONS.filter(sec =>
-    NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly ||
-    (sec.entries.length > 10 && settings.sectionVisibility[sec.id] !== false)
+    sec.entries.length > 0 && settings.sectionVisibility[sec.id] !== false
   );
 
   if (!targets.length) {
-    c.innerHTML = '<p style="font-size:12px;color:var(--text-muted);font-family:sans-serif;">No qualifying sections found (need name-only sections or sections with >10 entries).</p>';
+    c.innerHTML = '<p style="font-size:12px;color:var(--text-muted);font-family:sans-serif;">No visible sections with entries found.</p>';
     return;
   }
 

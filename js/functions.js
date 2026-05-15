@@ -320,6 +320,7 @@ function importCSV(event) {
       populateAdmin();         // refresh all admin fields
       buildScrollTrack();
       applySectionBgImage();
+      ttsInit();
 
       const total = SECTIONS.reduce((a,s) => a+s.entries.length, 0);
       const configNote = configApplied.length

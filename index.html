@@ -140,6 +140,16 @@
         </p>
       </div>
       <div class="admin-card" style="grid-column:1/-1;">
+        <h3>↔️ Content Area Padding</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Adjust left and right padding to control the display area width.
+        </p>
+        <label class="field-label">Horizontal Padding</label>
+        <input type="range" id="contentPaddingX" min="0.5" max="2" value="1" step="0.1" oninput="updateContentPadding()">
+        <div class="speed-display"><span>50%</span><span id="contentPaddingXVal" style="color:var(--gold);">100%</span><span>200%</span></div>
+        <p class="hint" style="margin-top:8px;">Decrease to show more content, increase to add margins.</p>
+      </div>
+      <div class="admin-card" style="grid-column:1/-1;">
         <h3>🔀 Section Visibility &amp; Icon</h3>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;font-family:'Noto Sans Sinhala',sans-serif;">
           Toggle sections on/off. The icon column shows/hides the decorative icon on each section header.

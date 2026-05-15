@@ -69,6 +69,7 @@ let settings = {
   ],
   sectionRowLimits:{},   // {secId: maxNamesPerSlide}
   fontScaleTitle:1, fontScaleSubtitle:1, fontScaleSection:1, fontScaleName:1, fontScaleMerit:1,
+  contentPaddingX:1,
 };
 
 let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
@@ -175,6 +176,7 @@ function exportCSV() {
     fontScaleSection: settings.fontScaleSection,
     fontScaleName: settings.fontScaleName,
     fontScaleMerit: settings.fontScaleMerit,
+    contentPaddingX: settings.contentPaddingX,
   };
   lines.push(csvRow(['__CONFIG__', 'fonts', JSON.stringify(fontSettings)]));
 
@@ -338,6 +340,7 @@ function importCSV(event) {
       buildScrollTrack();
       applySectionBgImage();
       applyFontScales();
+      applyContentPadding();
       ttsInit();
 
       const total = SECTIONS.reduce((a,s) => a+s.entries.length, 0);
@@ -1201,6 +1204,11 @@ function applyFontScales() {
   root.style.setProperty('--font-scale-name', ns);
   root.style.setProperty('--font-scale-merit', ms);
 }
+function applyContentPadding() {
+  const root = document.documentElement;
+  const p = settings.contentPaddingX || 1;
+  root.style.setProperty('--content-padding-x', p);
+}
 
 // ---- Admin navigation ----
 function showAdmin() {
@@ -1239,7 +1247,7 @@ function populateAdmin() {
   const cs=document.getElementById('colorSubtitle');      if(cs)  cs.value=settings.colorSubtitle||'#C8A96E';
   const cst=document.getElementById('colorSectionTitle'); if(cst) cst.value=settings.colorSectionTitle||'#F0D060';
   const cm=document.getElementById('colorMerit');         if(cm)  cm.value=settings.colorMerit||'#C8A96E';
-  updateSpeed(); updateSectionsPerSlide(); updateLinesPerSlide(); updateVolume(); updateFontScale();
+  updateSpeed(); updateSectionsPerSlide(); updateLinesPerSlide(); updateVolume(); updateFontScale(); updateContentPadding();
   buildSectionRowLimitsUI();
   // TTS
   const ttsEn=document.getElementById('ttsEnabled'); if(ttsEn) ttsEn.checked=settings.ttsEnabled||false;
@@ -1293,13 +1301,14 @@ function saveAndRefresh() {
   settings.fontScaleSection = parseFloat(document.getElementById('fontScaleSection')?.value || 1);
   settings.fontScaleName = parseFloat(document.getElementById('fontScaleName')?.value || 1);
   settings.fontScaleMerit = parseFloat(document.getElementById('fontScaleMerit')?.value || 1);
+  settings.contentPaddingX = parseFloat(document.getElementById('contentPaddingX')?.value || 1);
   const mUrl = document.getElementById('musicUrl').value.trim();
   if (mUrl) settings.musicUrl=mUrl;
   SECTIONS.forEach(sec=>{
     const cb=document.getElementById('toggle-'+sec.id);
     if (cb) settings.sectionVisibility[sec.id]=cb.checked;
   });
-  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales();
+  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales(); applyContentPadding();
 }
 
 function collectEditorData() {
@@ -1706,6 +1715,17 @@ function resetFontScales() {
   applyFontScales();
   buildScrollTrack();
 }
+function updateContentPadding() {
+  const el = document.getElementById('contentPaddingX');
+  const disp = document.getElementById('contentPaddingXVal');
+  if(el && disp) {
+    const v = parseFloat(el.value);
+    disp.textContent = Math.round(v*100)+'%';
+    settings.contentPaddingX = v;
+    applyContentPadding();
+    buildScrollTrack();
+  }
+}
 function applyMusic() {
   audio.loop   = settings.loopMusic;
   audio.volume = settings.volume;
@@ -1907,5 +1927,6 @@ applyColors();
 buildScrollTrack();
 applySectionBgImage();
 applyFontScales();
+applyContentPadding();
 applyMusic();
 ttsInit();

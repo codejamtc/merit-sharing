@@ -375,9 +375,7 @@ function adminSave() {
 function adminSaveAndDisplay() {
   adminSave();
   setTimeout(() => {
-    document.getElementById('admin-panel').classList.remove('active');
-    document.getElementById('display-view').classList.add('active');
-    document.body.classList.remove('admin-mode');
+    showDisplay();
   }, 300);
 }
 
@@ -872,10 +870,10 @@ function buildSectionHTML(sec) {
 
 function sectionLineCount(sec) {
   const nameOnly = NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly;
-  // section title = 1 line; name-only entries count 0.5 (two-col), merit entries count 2
+  // section title = 1 line; name-only: 1 line per name (not 0.5), merit entries count 2
   let lines = 1;
   if (nameOnly) {
-    lines += Math.ceil(sec.entries.length / 2); // two-col: 2 names per visual row
+    lines += sec.entries.length; // each name counts as 1 line for limiting purposes
   } else {
     sec.entries.forEach(e => { lines += calcEntryLines(e, false); });
   }
@@ -898,13 +896,14 @@ function splitSectionIntoChunks(sec, maxLines) {
   let lines = 1; // 1 for the title bar
 
   for (const entry of sec.entries) {
-    const cost = nameOnly ? 0.5 : calcEntryLines(entry, false);
+    // For name-only: each name costs 1 line (not 0.5) so that "lines per slide" setting limits names properly
+    const cost = nameOnly ? 1 : calcEntryLines(entry, false);
 
-    // Use per-section name limit if set, otherwise use global lines budget
-    // For name-only: perSecLimit names = perSecLimit/2 entries, each costs 0.5 lines, so limit = perSecLimit/4 + 1
-    // For regular: perSecLimit names = perSecLimit entries, each costs 2 lines, so limit = perSecLimit*2 + 1
+    // Use per-section limit if set, otherwise use global maxLines
+    // For name-only: each entry costs 1 line, so limit = perSecLimit + 1 (for title)
+    // For regular: perSecLimit entries, each costs 2 lines max, so limit = perSecLimit*2 + 1
     const limit = perSecLimit !== null
-      ? (nameOnly ? (perSecLimit / 4 + 1) : (perSecLimit * 2 + 1))
+      ? (nameOnly ? (perSecLimit + 1) : (perSecLimit * 2 + 1))
       : maxLines;
 
     if (chunk.length > 0 && lines + cost > limit) {

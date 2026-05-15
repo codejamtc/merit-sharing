@@ -55,6 +55,7 @@
     <button class="tab-btn" onclick="switchTab('tab-sheets',this)">Google Sheets</button>
     <button class="tab-btn" onclick="switchTab('tab-visibility',this)">Section Visibility</button>
     <button class="tab-btn" onclick="switchTab('tab-settings',this)">Settings</button>
+    <button class="tab-btn" onclick="switchTab('tab-titlesubtitle',this)">Title &amp; Sub Titles</button>
     <button class="tab-btn" onclick="switchTab('tab-slidemanager',this)">Slide Manager</button>
     <button class="tab-btn" onclick="switchTab('tab-music',this)">Music</button>
     <button class="tab-btn" onclick="switchTab('tab-importexport',this)">Import &amp; Export</button>
@@ -229,6 +230,35 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- TAB: TITLE & SUB TITLES -->
+  <div id="tab-titlesubtitle" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
+    <div class="admin-grid">
+      <div class="admin-card" style="grid-column:1/-1;">
+        <h3>🖥️ Display Text</h3>
+        <div class="admin-grid" style="gap:14px;">
+          <div>
+            <label class="field-label">Event Title</label>
+            <input type="text" id="eventTitle" value="වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව">
+            <label class="field-label">Subtitle Line 1</label>
+            <textarea id="subLine1" rows="2">නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්</textarea>
+          </div>
+          <div>
+            <label class="field-label">Subtitle Line 2</label>
+            <textarea id="subLine2" rows="2">නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!</textarea>
+            <label class="field-label">Subtitle Line 3</label>
+            <textarea id="subLine3" rows="2">උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!</textarea>
+            <label class="field-label">Footer Text</label>
+            <input type="text" id="footerText" value="කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය">
+          </div>
+        </div>
+      </div>
 
       <div class="admin-card">
         <h3>🎨 Font Colors</h3>
@@ -248,34 +278,25 @@
           <label>Merit sharing font color</label>
           <input type="color" id="colorMerit" value="#C8A96E" title="Merit text color">
         </div>
-        <p class="hint">Changes apply when you Save &amp; Apply.</p>
+        <p class="hint">Changes apply when you Save.</p>
       </div>
 
-      <div class="admin-card" style="grid-column:1/-1;">
-        <h3>🖥️ Display Text</h3>
-        <div class="admin-grid" style="gap:14px;">
-          <div>
-            <label class="field-label">Event Title</label>
-            <input type="text" id="eventTitle" value="වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව">
-            <label class="field-label">Subtitle Line 1</label>
-            <textarea id="subLine1" rows="2">නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්</textarea>
-          </div>
-          <div>
-            <label class="field-label">Subtitle Line 2</label>
-            <textarea id="subLine2" rows="2">නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!</textarea>
-            <label class="field-label">Subtitle Line 3</label>
-            <textarea id="subLine3" rows="2">උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!</textarea>
-            <label class="field-label">Footer Text</label>
-            <input type="text" id="footerText" value="කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය">
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
-          <button class="btn-primary" onclick="saveAndRefresh()" style="max-width:280px;">💾 Save &amp; Apply</button>
-          <button class="btn-primary" onclick="saveAndRefresh();showDisplay();" style="max-width:280px;background:linear-gradient(135deg,#1a4a2a,#2d7a45);">💾 Save &amp; Refresh Display</button>
+      <div class="admin-card">
+        <h3>👁️ Title Visibility</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Hide the title and subtitle after a certain number of slides to reduce distraction.
+        </p>
+        <label class="field-label">Hide title & subtitle after slide #</label>
+        <input type="range" id="hideSubtitleAfter" min="0" max="20" value="1" step="1" oninput="updateHideSubtitle()">
+        <div class="speed-display">
+          <span>Never (0)</span>
+          <span id="hideSubtitleVal" style="color:var(--gold);">After slide 1</span>
+          <span>Slide 20</span>
         </div>
       </div>
     </div>
   </div>
+
   <!-- TAB: SLIDE MANAGER -->
   <div id="tab-slidemanager" class="tab-pane">
     <div class="tab-action-buttons">

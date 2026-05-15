@@ -55,7 +55,7 @@ let settings = {
   subLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
   footerText:'කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය',
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
-  hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
+  hideSubtitleAfter:1, showSectionBgImage:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -116,7 +116,7 @@ function exportCSV() {
   lines.push(csvRow(['__CONFIG__', 'section_row_limits', JSON.stringify(settings.sectionRowLimits||{})]));
   lines.push(csvRow(['__CONFIG__', 'section_bg_opacity', JSON.stringify(settings.sectionBgImageOpacity||{})]));
 
-  // 2d. Display settings (text, colors, subtitles)
+  // 2d. Display settings (text, colors, subtitles, visibility)
   const displaySettings = {
     eventTitle:       settings.eventTitle,
     subLine1:         settings.subLine1,
@@ -127,6 +127,7 @@ function exportCSV() {
     colorSubtitle:    settings.colorSubtitle,
     colorSectionTitle:settings.colorSectionTitle,
     colorMerit:       settings.colorMerit,
+    hideSubtitleAfter:settings.hideSubtitleAfter,
   };
   lines.push(csvRow(['__CONFIG__', 'display', JSON.stringify(displaySettings)]));
 
@@ -1172,7 +1173,7 @@ function populateAdmin() {
   document.getElementById('footerText').value = settings.footerText;
   document.getElementById('musicUrl').value = settings.musicUrl||'';
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
-  const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||3; updateHideSubtitle();}
+  const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||1; updateHideSubtitle();}
   const ass=document.getElementById('autoSplitSections'); if(ass) ass.checked=settings.autoSplitSections!==false;
   const mfStatus=document.getElementById('music-file-status');
   if(mfStatus && localMusicBlobUrl && settings.musicUrl && settings.musicUrl.startsWith('(local:')) mfStatus.textContent='✓ '+settings.musicUrl.slice(7,settings.musicUrl.length-1)+' (loaded in memory)';

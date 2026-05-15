@@ -58,6 +58,7 @@
     <button class="tab-btn" onclick="switchTab('tab-titlesubtitle',this)">Title &amp; Sub Titles</button>
     <button class="tab-btn" onclick="switchTab('tab-slidemanager',this)">Slide Manager</button>
     <button class="tab-btn" onclick="switchTab('tab-music',this)">Music</button>
+    <button class="tab-btn" onclick="switchTab('tab-fonts',this)">Fonts</button>
     <button class="tab-btn" onclick="switchTab('tab-importexport',this)">Import &amp; Export</button>
   </div>
 
@@ -376,6 +377,43 @@
         <label class="field-label" style="margin-top:10px;">Volume</label>
         <input type="range" id="volumeSlider" min="0" max="100" value="60" oninput="updateVolume()">
         <div class="speed-display"><span>0%</span><span id="volVal" style="color:var(--gold);">60%</span><span>100%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: FONTS -->
+  <div id="tab-fonts" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
+    <div class="admin-grid">
+      <div class="admin-card" style="grid-column:1/-1;">
+        <h3>🔤 Font Size Controls</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Adjust font sizes for different elements. The display will scale proportionally. Values range from 0.5 (50%) to 2.0 (200%).
+        </p>
+        <label class="field-label">Title (Event Title)</label>
+        <input type="range" id="fontScaleTitle" min="0.5" max="2" value="1" step="0.1" oninput="updateFontScale()">
+        <div class="speed-display"><span>50%</span><span id="fontScaleTitleVal" style="color:var(--gold);">100%</span><span>200%</span></div>
+
+        <label class="field-label" style="margin-top:14px;">Sub Titles</label>
+        <input type="range" id="fontScaleSubtitle" min="0.5" max="2" value="1" step="0.1" oninput="updateFontScale()">
+        <div class="speed-display"><span>50%</span><span id="fontScaleSubtitleVal" style="color:var(--gold);">100%</span><span>200%</span></div>
+
+        <label class="field-label" style="margin-top:14px;">Section Titles</label>
+        <input type="range" id="fontScaleSection" min="0.5" max="2" value="1" step="0.1" oninput="updateFontScale()">
+        <div class="speed-display"><span>50%</span><span id="fontScaleSectionVal" style="color:var(--gold);">100%</span><span>200%</span></div>
+
+        <label class="field-label" style="margin-top:14px;">Names</label>
+        <input type="range" id="fontScaleName" min="0.5" max="2" value="1" step="0.1" oninput="updateFontScale()">
+        <div class="speed-display"><span>50%</span><span id="fontScaleNameVal" style="color:var(--gold);">100%</span><span>200%</span></div>
+
+        <label class="field-label" style="margin-top:14px;">Merit Sharing Text</label>
+        <input type="range" id="fontScaleMerit" min="0.5" max="2" value="1" step="0.1" oninput="updateFontScale()">
+        <div class="speed-display"><span>50%</span><span id="fontScaleMeritVal" style="color:var(--gold);">100%</span><span>200%</span></div>
+
+        <button class="btn-secondary" onclick="resetFontScales()" style="margin-top:20px;">↺ Reset to Default</button>
       </div>
     </div>
   </div>

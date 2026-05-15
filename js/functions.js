@@ -68,6 +68,7 @@ let settings = {
     {label:'Slide 6', sectionIds:['s13']}
   ],
   sectionRowLimits:{},   // {secId: maxNamesPerSlide}
+  fontScaleTitle:1, fontScaleSubtitle:1, fontScaleSection:1, fontScaleName:1, fontScaleMerit:1,
 };
 
 let scrollTimer=null, slideGroups=[], currentSlide=0, musicPlaying=false;
@@ -166,6 +167,16 @@ function exportCSV() {
     ttsReadMerit: settings.ttsReadMerit,
   };
   lines.push(csvRow(['__CONFIG__', 'tts', JSON.stringify(ttsSettings)]));
+
+  // 2h. Font scale settings
+  const fontSettings = {
+    fontScaleTitle: settings.fontScaleTitle,
+    fontScaleSubtitle: settings.fontScaleSubtitle,
+    fontScaleSection: settings.fontScaleSection,
+    fontScaleName: settings.fontScaleName,
+    fontScaleMerit: settings.fontScaleMerit,
+  };
+  lines.push(csvRow(['__CONFIG__', 'fonts', JSON.stringify(fontSettings)]));
 
   const csv = '\uFEFF' + lines.join('\n');
   const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
@@ -290,6 +301,12 @@ function importCSV(event) {
               configApplied.push('tts');
               break;
             }
+            case 'fonts': {
+              const f = JSON.parse(val);
+              Object.assign(settings, f);
+              configApplied.push('fonts');
+              break;
+            }
             case 'section_row_limits':
               settings.sectionRowLimits = JSON.parse(val);
               configApplied.push('row_limits');
@@ -320,6 +337,7 @@ function importCSV(event) {
       populateAdmin();         // refresh all admin fields
       buildScrollTrack();
       applySectionBgImage();
+      applyFontScales();
       ttsInit();
 
       const total = SECTIONS.reduce((a,s) => a+s.entries.length, 0);
@@ -1170,6 +1188,20 @@ function applySectionBgImage() {
   else track.classList.add('dharma-wheel-off');
 }
 
+function applyFontScales() {
+  const root = document.documentElement;
+  const ts = settings.fontScaleTitle || 1;
+  const ss = settings.fontScaleSubtitle || 1;
+  const scs = settings.fontScaleSection || 1;
+  const ns = settings.fontScaleName || 1;
+  const ms = settings.fontScaleMerit || 1;
+  root.style.setProperty('--font-scale-title', ts);
+  root.style.setProperty('--font-scale-subtitle', ss);
+  root.style.setProperty('--font-scale-section', scs);
+  root.style.setProperty('--font-scale-name', ns);
+  root.style.setProperty('--font-scale-merit', ms);
+}
+
 // ---- Admin navigation ----
 function showAdmin() {
   ttsStop();
@@ -1207,7 +1239,7 @@ function populateAdmin() {
   const cs=document.getElementById('colorSubtitle');      if(cs)  cs.value=settings.colorSubtitle||'#C8A96E';
   const cst=document.getElementById('colorSectionTitle'); if(cst) cst.value=settings.colorSectionTitle||'#F0D060';
   const cm=document.getElementById('colorMerit');         if(cm)  cm.value=settings.colorMerit||'#C8A96E';
-  updateSpeed(); updateSectionsPerSlide(); updateLinesPerSlide(); updateVolume();
+  updateSpeed(); updateSectionsPerSlide(); updateLinesPerSlide(); updateVolume(); updateFontScale();
   buildSectionRowLimitsUI();
   // TTS
   const ttsEn=document.getElementById('ttsEnabled'); if(ttsEn) ttsEn.checked=settings.ttsEnabled||false;
@@ -1256,13 +1288,18 @@ function saveAndRefresh() {
   const cs=document.getElementById('colorSubtitle');     if(cs) settings.colorSubtitle=cs.value;
   const cst=document.getElementById('colorSectionTitle');if(cst) settings.colorSectionTitle=cst.value;
   const cm=document.getElementById('colorMerit');        if(cm) settings.colorMerit=cm.value;
+  settings.fontScaleTitle = parseFloat(document.getElementById('fontScaleTitle')?.value || 1);
+  settings.fontScaleSubtitle = parseFloat(document.getElementById('fontScaleSubtitle')?.value || 1);
+  settings.fontScaleSection = parseFloat(document.getElementById('fontScaleSection')?.value || 1);
+  settings.fontScaleName = parseFloat(document.getElementById('fontScaleName')?.value || 1);
+  settings.fontScaleMerit = parseFloat(document.getElementById('fontScaleMerit')?.value || 1);
   const mUrl = document.getElementById('musicUrl').value.trim();
   if (mUrl) settings.musicUrl=mUrl;
   SECTIONS.forEach(sec=>{
     const cb=document.getElementById('toggle-'+sec.id);
     if (cb) settings.sectionVisibility[sec.id]=cb.checked;
   });
-  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage();
+  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales();
 }
 
 function collectEditorData() {
@@ -1644,6 +1681,31 @@ function updateVolume() {
   document.getElementById('volVal').textContent=v+'%';
   audio.volume=v/100;
 }
+function updateFontScale() {
+  const ids = ['fontScaleTitle','fontScaleSubtitle','fontScaleSection','fontScaleName','fontScaleMerit'];
+  const keys = ['fontScaleTitle','fontScaleSubtitle','fontScaleSection','fontScaleName','fontScaleMerit'];
+  ids.forEach((id,i) => {
+    const el = document.getElementById(id);
+    const disp = document.getElementById(id+'Val');
+    if(el && disp) {
+      const v = parseFloat(el.value);
+      disp.textContent = Math.round(v*100)+'%';
+      settings[keys[i]] = v;
+    }
+  });
+  applyFontScales();
+  buildScrollTrack();
+}
+function resetFontScales() {
+  settings.fontScaleTitle = 1;
+  settings.fontScaleSubtitle = 1;
+  settings.fontScaleSection = 1;
+  settings.fontScaleName = 1;
+  settings.fontScaleMerit = 1;
+  populateAdmin();
+  applyFontScales();
+  buildScrollTrack();
+}
 function applyMusic() {
   audio.loop   = settings.loopMusic;
   audio.volume = settings.volume;
@@ -1844,5 +1906,6 @@ applyDisplaySettings();
 applyColors();
 buildScrollTrack();
 applySectionBgImage();
+applyFontScales();
 applyMusic();
 ttsInit();

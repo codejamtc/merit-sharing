@@ -6,6 +6,11 @@
   --color-subtitle:#C8A96E;
   --color-section-title:#F0D060;
   --color-merit:#C8A96E;
+  --font-scale-title:1;
+  --font-scale-subtitle:1;
+  --font-scale-section:1;
+  --font-scale-name:1;
+  --font-scale-merit:1;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--text-main);min-height:100vh;overflow-x:hidden;}
@@ -26,9 +31,9 @@ body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--t
   filter:drop-shadow(0 0 12px rgba(212,175,55,.55));}
 @keyframes spinWheel{to{transform:rotate(360deg);}}
 
-.display-header h1{font-size:clamp(26px,3.8vw,54px);font-weight:700;color:var(--color-title);
+.display-header h1{font-size:calc(clamp(26px,3.8vw,54px) * var(--font-scale-title));font-weight:700;color:var(--color-title);
   letter-spacing:.04em;text-shadow:0 0 40px rgba(212,175,55,.35);line-height:1.3;margin-bottom:16px;}
-.subtitle{font-size:clamp(14px,1.7vw,25px);color:var(--color-subtitle);
+.subtitle{font-size:calc(clamp(14px,1.7vw,25px) * var(--font-scale-subtitle));color:var(--color-subtitle);
   font-family:'Noto Serif Sinhala',serif;font-weight:400;line-height:1.85;margin-bottom:5px;}
 .gold-divider{width:260px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
   margin:18px auto 0;border-radius:1px;}
@@ -47,7 +52,7 @@ body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--t
 .section-block{width:100%;}
 
 .section-title-bar{background:linear-gradient(135deg,rgba(212,175,55,.18),rgba(212,175,55,.06));
-  border:1px solid rgba(212,175,55,.4);border-radius:10px;padding:16px 28px;margin-bottom:16px;
+  border:1px solid rgba(212,175,55,.4);border-radius:10px;padding:calc(16px * var(--font-scale-section)) calc(28px * var(--font-scale-section));margin-bottom:calc(16px * var(--font-scale-section));
   text-align:center;position:relative;overflow:hidden;}
 .section-title-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;
   background:var(--gold);border-radius:5px 0 0 5px;}
@@ -59,15 +64,15 @@ body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--t
   opacity:0.07;pointer-events:none;transition:opacity .3s;}
 .section-bg-off .section-title-bar::after{opacity:0 !important;}
 .dharma-wheel-off .section-title-bar::after{opacity:0 !important;}
-.section-title-bar h2{font-size:clamp(24px,3.2vw,48px);color:var(--color-section-title);font-weight:700;line-height:1.35;position:relative;z-index:1;}
+.section-title-bar h2{font-size:calc(clamp(24px,3.2vw,48px) * var(--font-scale-section));color:var(--color-section-title);font-weight:700;line-height:1.35;position:relative;z-index:1;}
 .section-container{position:relative;}
 
 .entry-card{background:rgba(255,248,231,.045);border:1px solid rgba(212,175,55,.14);
-  border-radius:10px;padding:20px 28px;margin-bottom:14px;}
+  border-radius:10px;padding:calc(20px * var(--font-scale-name)) calc(28px * var(--font-scale-name));margin-bottom:calc(14px * var(--font-scale-name));}
 .entry-card.no-merit{padding:20px 28px;}
-.entry-name{font-size:clamp(22px,3vw,42px);font-weight:700;color:var(--cream);margin-bottom:0;line-height:1.3;}
+.entry-name{font-size:calc(clamp(22px,3vw,42px) * var(--font-scale-name));font-weight:700;color:var(--cream);margin-bottom:0;line-height:1.3;}
 .entry-name.has-merit{margin-bottom:10px;}
-.entry-merit{font-size:clamp(17px,2.2vw,32px);color:var(--color-merit);
+.entry-merit{font-size:calc(clamp(17px,2.2vw,32px) * var(--font-scale-merit));color:var(--color-merit);
   font-family:'Noto Serif Sinhala',serif;font-weight:400;line-height:1.75;
   padding-left:16px;border-left:3px solid rgba(212,175,55,.28);}
 /* Two-column name list for name-only sections */

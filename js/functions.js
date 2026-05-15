@@ -55,7 +55,7 @@ let settings = {
   subLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
   footerText:'කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය',
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
-  hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{},
+  hideSubtitleAfter:3, showSectionBgImage:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -107,6 +107,7 @@ function exportCSV() {
   lines.push(csvRow(['__CONFIG__', 'slide_manager_enabled', settings.slideManagerEnabled ? '1' : '0']));
   lines.push(csvRow(['__CONFIG__', 'slide_manager', JSON.stringify(settings.slideManagerConfig||[])]));
   lines.push(csvRow(['__CONFIG__', 'section_row_limits', JSON.stringify(settings.sectionRowLimits||{})]));
+  lines.push(csvRow(['__CONFIG__', 'section_bg_opacity', JSON.stringify(settings.sectionBgImageOpacity||{})]));
 
   // 2d. Display settings (text, colors, subtitles)
   const displaySettings = {
@@ -282,6 +283,10 @@ function importCSV(event) {
               settings.sectionRowLimits = JSON.parse(val);
               configApplied.push('row_limits');
               break;
+            case 'section_bg_opacity':
+              settings.sectionBgImageOpacity = JSON.parse(val);
+              configApplied.push('bg_opacity');
+              break;
           }
         } catch(parseErr) {
           console.warn('Config parse error for key:', key, parseErr);
@@ -358,6 +363,7 @@ function loadState() {
     // Initialize default background images if not set by user
     if (!settings.sectionBgImage) settings.sectionBgImage = {};
     if (!settings.sectionBgImageEnabled) settings.sectionBgImageEnabled = {};
+    if (!settings.sectionBgImageOpacity) settings.sectionBgImageOpacity = {};
 
     // Apply default background images for each section that doesn't have a custom image
     Object.keys(DEFAULT_BG_IMAGES).forEach(secId => {
@@ -366,6 +372,10 @@ function loadState() {
         settings.sectionBgImage[secId] = DEFAULT_BG_IMAGES[secId];
         // Also enable it by default
         settings.sectionBgImageEnabled[secId] = true;
+      }
+      // Set default opacity to 20% (0.2) if not set
+      if (settings.sectionBgImageOpacity[secId] === undefined) {
+        settings.sectionBgImageOpacity[secId] = 0.2;
       }
     });
   } catch(e) {}
@@ -873,8 +883,11 @@ function buildSectionHTML(sec) {
   // Section background image
   const bgEnabled = settings.sectionBgImageEnabled && settings.sectionBgImageEnabled[sec.id];
   const bgImage = settings.sectionBgImage && settings.sectionBgImage[sec.id];
+  const bgOpacity = settings.sectionBgImageOpacity && settings.sectionBgImageOpacity[sec.id] !== undefined
+    ? settings.sectionBgImageOpacity[sec.id]
+    : 0.2; // Default 20%
   const bgStyle = (bgEnabled && bgImage)
-    ? `background-image:url(${bgImage});background-size:cover;background-position:center;opacity:0.35;position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;`
+    ? `background-image:url(${bgImage});background-size:cover;background-position:center;opacity:${bgOpacity};position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;`
     : '';
   const bgContainer = bgStyle ? `<div style="${bgStyle}"></div>` : '';
 
@@ -1373,6 +1386,9 @@ function buildSectionBgImages() {
 
     const enabled = settings.sectionBgImageEnabled && settings.sectionBgImageEnabled[sec.id];
     const bgImage = settings.sectionBgImage && settings.sectionBgImage[sec.id];
+    const opacity = settings.sectionBgImageOpacity && settings.sectionBgImageOpacity[sec.id] !== undefined
+      ? settings.sectionBgImageOpacity[sec.id]
+      : 0.2;
 
     row.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
@@ -1382,12 +1398,17 @@ function buildSectionBgImages() {
           <span class="toggle-slider"></span>
         </label>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
         <input type="file" id="bg-upload-${sec.id}" accept="image/*" style="display:none;" onchange="handleSectionBgUpload('${sec.id}', this)">
         <button onclick="document.getElementById('bg-upload-${sec.id}').click()" style="padding:6px 12px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:5px;color:var(--gold);cursor:pointer;font-size:12px;">📁 Upload</button>
         <input type="text" id="bg-url-${sec.id}" value="${bgImage || ''}" placeholder="Or paste image URL..." style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.15);border-radius:4px;color:var(--text-main);padding:5px 8px;font-size:12px;" onchange="setSectionBgUrl('${sec.id}', this.value)">
         ${bgImage ? `<img src="${bgImage}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid rgba(212,175,55,.3);">` : ''}
         ${bgImage ? `<button onclick="clearSectionBg('${sec.id}')" style="padding:4px 8px;background:rgba(200,50,50,.1);border:1px solid rgba(200,50,50,.3);border-radius:4px;color:#cc4444;cursor:pointer;font-size:11px;">✕</button>` : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <span style="font-size:11px;color:var(--text-muted);font-family:sans-serif;white-space:nowrap;">Opacity:</span>
+        <input type="range" id="bg-opacity-${sec.id}" min="0" max="100" value="${Math.round(opacity * 100)}" style="flex:1;height:4px;cursor:pointer;" onchange="setSectionBgOpacity('${sec.id}', this.value)">
+        <span id="bg-opacity-val-${sec.id}" style="font-size:11px;color:var(--gold);font-family:sans-serif;min-width:35px;">${Math.round(opacity * 100)}%</span>
       </div>
     `;
     c.appendChild(row);
@@ -1401,6 +1422,17 @@ function toggleSectionBgEnabled(secId, enabled) {
   buildScrollTrack();
   applySectionBgImage(); // Apply the background image to display
   setCsvStatus('✓ Section background updated', true);
+}
+
+function setSectionBgOpacity(secId, value) {
+  const opacity = parseInt(value) / 100;
+  if (!settings.sectionBgImageOpacity) settings.sectionBgImageOpacity = {};
+  settings.sectionBgImageOpacity[secId] = opacity;
+  document.getElementById('bg-opacity-val-' + secId).textContent = value + '%';
+  saveState();
+  buildScrollTrack();
+  applySectionBgImage();
+  setCsvStatus('✓ Opacity updated', true);
 }
 
 function handleSectionBgUpload(secId, input) {

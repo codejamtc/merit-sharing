@@ -56,6 +56,7 @@
     <button class="tab-btn" onclick="switchTab('tab-visibility',this)">Section Visibility</button>
     <button class="tab-btn" onclick="switchTab('tab-settings',this)">Settings</button>
     <button class="tab-btn" onclick="switchTab('tab-slidemanager',this)">Slide Manager</button>
+    <button class="tab-btn" onclick="switchTab('tab-music',this)">Music</button>
     <button class="tab-btn" onclick="switchTab('tab-importexport',this)">Import &amp; Export</button>
   </div>
 
@@ -179,30 +180,6 @@
           <span>Slide 20</span>
         </div>
         <p class="hint" style="margin-top:-6px;">0 = always show. Subtitles fade out after the Nth slide and return on loop.</p>
-      </div>
-
-      <div class="admin-card">
-        <h3>🎵 Music</h3>
-        <label class="field-label">Music URL</label>
-        <div class="music-row">
-          <input type="text" id="musicUrl" placeholder="https://..." value="https://raw.githubusercontent.com/codejamtc/merit-sharing/main/scott-buckley-reverie(chosic.com).mp3">
-          <button onclick="previewMusic()">▶</button>
-        </div>
-        <p class="hint" style="margin-top:-8px;">Suggested: Buddhist meditation music from YouTube/SoundCloud embed or direct MP3 link. Try: https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3 as a placeholder, or search for "Buddhist meditation music mp3 free".</p>
-        <label class="field-label">Or upload audio file:</label>
-        <input type="file" id="musicFile" accept="audio/*" onchange="loadMusicFile()" style="background:transparent;border:none;padding:0;margin-bottom:4px;font-size:13px;color:var(--text-muted);">
-        <div id="music-file-status" style="font-size:11px;color:#8dcc55;font-family:'Noto Sans Sinhala',sans-serif;margin-bottom:10px;min-height:16px;"></div>
-        <div class="section-toggle-row" style="border:none;padding:0;">
-          <span class="toggle-label">Auto-play on start</span>
-          <label class="toggle-switch"><input type="checkbox" id="autoPlayMusic"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="section-toggle-row" style="border:none;padding-top:8px;">
-          <span class="toggle-label">Loop music</span>
-          <label class="toggle-switch"><input type="checkbox" id="loopMusic" checked><span class="toggle-slider"></span></label>
-        </div>
-        <label class="field-label" style="margin-top:10px;">Volume</label>
-        <input type="range" id="volumeSlider" min="0" max="100" value="60" oninput="updateVolume()">
-        <div class="speed-display"><span>0%</span><span id="volVal" style="color:var(--gold);">60%</span><span>100%</span></div>
       </div>
 
       <div class="admin-card" style="grid-column:1/-1;">
@@ -336,6 +313,39 @@
           <h4>📋 Unassigned sections (click to add to last slide)</h4>
           <div id="sm-unassigned-chips"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: MUSIC -->
+  <div id="tab-music" class="tab-pane">
+    <div class="tab-action-buttons">
+      <button class="btn-secondary" onclick="adminSave()">💾 Save</button>
+      <button class="btn-primary" onclick="adminSaveAndDisplay()">💾 Save &amp; Display</button>
+    </div>
+    <div class="admin-grid">
+      <div class="admin-card" style="grid-column:1/-1;">
+        <h3>🎵 Music Settings</h3>
+        <label class="field-label">Music URL</label>
+        <div class="music-row">
+          <input type="text" id="musicUrl" placeholder="https://..." value="https://raw.githubusercontent.com/codejamtc/merit-sharing/main/scott-buckley-reverie(chosic.com).mp3">
+          <button onclick="previewMusic()">▶</button>
+        </div>
+        <p class="hint" style="margin-top:-8px;">Suggested: Buddhist meditation music from YouTube/SoundCloud embed or direct MP3 link.</p>
+        <label class="field-label">Or upload audio file:</label>
+        <input type="file" id="musicFile" accept="audio/*" onchange="loadMusicFile()" style="background:transparent;border:none;padding:0;margin-bottom:4px;font-size:13px;color:var(--text-muted);">
+        <div id="music-file-status" style="font-size:11px;color:#8dcc55;font-family:'Noto Sans Sinhala',sans-serif;margin-bottom:10px;min-height:16px;"></div>
+        <div class="section-toggle-row" style="border:none;padding:0;">
+          <span class="toggle-label">Auto-play on start</span>
+          <label class="toggle-switch"><input type="checkbox" id="autoPlayMusic" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="section-toggle-row" style="border:none;padding-top:8px;">
+          <span class="toggle-label">Loop music</span>
+          <label class="toggle-switch"><input type="checkbox" id="loopMusic" checked><span class="toggle-slider"></span></label>
+        </div>
+        <label class="field-label" style="margin-top:10px;">Volume</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="60" oninput="updateVolume()">
+        <div class="speed-display"><span>0%</span><span id="volVal" style="color:var(--gold);">60%</span><span>100%</span></div>
       </div>
     </div>
   </div>

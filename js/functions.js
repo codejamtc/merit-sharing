@@ -47,7 +47,7 @@ let SECTIONS = DEFAULT_SECTIONS.map(s => ({...s, entries:[]}));
 
 let settings = {
   speed:10, sectionsPerSlide:2, linesPerSlide:15, autoLoop:true,
-  autoPlayMusic:true, loopMusic:true, volume:0.6, musicUrl:'https://raw.githubusercontent.com/codejamtc/merit-sharing/main/scott-buckley-reverie(chosic.com).mp3',
+  autoPlayMusic:true, loopMusic:true, volume:0.6, musicUrl:'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/sound/scott-buckley-reverie(chosic.com).mp3',
   sectionVisibility:{},
   eventTitle:'වෙසක් පොහෝ දින පුණ්‍යාණුමෝදනාව',
   subLine1:'නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්',

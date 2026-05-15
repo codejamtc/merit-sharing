@@ -12,10 +12,10 @@ const ICONS = {
 // Default section background images (GitHub raw URLs)
 const DEFAULT_BG_IMAGES = {
   's1': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/morning-dana.png',
-  's2': 'https://github.com/codejamtc/merit-sharing/blob/add-split-function-to-the-other-section/assets/img/lunch-dana.png',
+  's2': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/lunch-dana.png',
   's3': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/dhamma-hall.png',
   's4': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/sound-led.png',
-  's5': 'https://github.com/codejamtc/merit-sharing/blob/add-split-function-to-the-other-section/assets/img/ice-cream.png',
+  's5': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/ice-cream.png',
   's6': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/banana.png',
   's7': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/Gilanpasa.png',
   's8': 'https://raw.githubusercontent.com/codejamtc/merit-sharing/add-split-function-to-the-other-section/assets/img/flowers.png',

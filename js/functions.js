@@ -64,7 +64,7 @@ let settings = {
   finalSlideLine1:'නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්',
   finalSlideLine2:'නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!',
   finalSlideLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
-  finalSlideFontColor:'#D4AF37', finalSlideFontSize:28, finalSlideImageUrl:'https://raw.githubusercontent.com/codejamtc/merit-sharing/develop/assets/img/last-slde.png', finalSlideImageOpacity:0.5,
+  finalSlideFontColor:'#D4AF37', finalSlideFontSize:28, finalSlideImageUrl:'https://raw.githubusercontent.com/codejamtc/merit-sharing/blob/develop/assets/img/last-slde.png', finalSlideImageOpacity:0.5,
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:true,

@@ -1266,14 +1266,11 @@ function showSlide(idx, instant) {
 }
 
 function nextSlide() {
-  // If on final slide, loop back to first slide
+  // If on final slide, loop back to first slide without stopping the timer
   if (isOnFinalSlide) {
     showMainContent();
     currentSlide = 0;
     showSlide(0, false);
-    if (slideGroups.length > 1 || settings.autoLoop) {
-      scrollTimer = setInterval(nextSlide, settings.speed * 1000);
-    }
     return;
   }
 
@@ -1281,13 +1278,13 @@ function nextSlide() {
   if (!cur) return;
   let next = currentSlide+1;
   if (next>=slideGroups.length) {
-    // Check if we should show final slide (before checking autoLoop)
-    if (settings.finalSlideEnabled !== false) {
-      clearInterval(scrollTimer);
+    // Check if we should show final slide (default to true if not set)
+    const finalEnabled = settings.finalSlideEnabled === undefined ? true : settings.finalSlideEnabled;
+    if (finalEnabled) {
       showFinalSlide();
       return;
     }
-    if (!settings.autoLoop) { clearInterval(scrollTimer); return; }
+    // If final slide is disabled, loop back
     next=0;
   }
   cur.classList.add('leaving');
@@ -1458,9 +1455,6 @@ function applyFinalSlide() {
 
   // Ensure final slide is hidden by default
   finalSlide.style.display = 'none';
-  } else {
-    finalSlide.style.display = 'none';
-  }
 }
 
 let isOnFinalSlide = false;
@@ -1477,9 +1471,12 @@ function showFinalSlide() {
     g.style.display = 'none';
   });
 
-  // Show final slide if enabled
-  if (settings.finalSlideEnabled !== false && finalSlide) {
-    finalSlide.style.display = 'block';
+  // Show final slide if enabled (default to true if not set)
+  const finalEnabled = settings.finalSlideEnabled === undefined ? true : settings.finalSlideEnabled;
+  if (finalEnabled && finalSlide) {
+    finalSlide.style.display = 'flex';
+    finalSlide.style.flexDirection = 'column';
+    finalSlide.style.justifyContent = 'center';
     isOnFinalSlide = true;
     // Hide the main header, scroller and footer when showing final slide
     if (header) header.style.display = 'none';

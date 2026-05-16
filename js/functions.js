@@ -1226,6 +1226,9 @@ function buildScrollTrack() {
 }
 
 function showSlide(idx, instant) {
+  // Hide final slide and show main content when navigating to a slide
+  showMainContent();
+
   slideGroups.forEach((g,i) => {
     g.classList.remove('active','visible','leaving');
     if (i!==idx) g.style.display='none';
@@ -1263,12 +1266,23 @@ function showSlide(idx, instant) {
 }
 
 function nextSlide() {
+  // If on final slide, loop back to first slide
+  if (isOnFinalSlide) {
+    showMainContent();
+    currentSlide = 0;
+    showSlide(0, false);
+    if (slideGroups.length > 1 || settings.autoLoop) {
+      scrollTimer = setInterval(nextSlide, settings.speed * 1000);
+    }
+    return;
+  }
+
   const cur = slideGroups[currentSlide];
   if (!cur) return;
   let next = currentSlide+1;
   if (next>=slideGroups.length) {
-    // Check if we should show final slide
-    if (settings.finalSlideEnabled) {
+    // Check if we should show final slide (before checking autoLoop)
+    if (settings.finalSlideEnabled !== false) {
       clearInterval(scrollTimer);
       showFinalSlide();
       return;
@@ -1416,40 +1430,46 @@ function applyFinalSlide() {
   const line1 = document.getElementById('final-slide-line1');
   const line2 = document.getElementById('final-slide-line2');
   const line3 = document.getElementById('final-slide-line3');
-  const header = document.querySelector('.display-header');
 
   if (!finalSlide || !line1 || !line2 || !line3) return;
 
-  if (settings.finalSlideEnabled && settings.finalSlideLine1 && settings.finalSlideLine1.trim()) {
-    finalSlide.style.display = 'block';
-    line1.textContent = settings.finalSlideLine1 || '';
-    line2.textContent = settings.finalSlideLine2 || '';
-    line3.textContent = settings.finalSlideLine3 || '';
-    line1.style.color = settings.finalSlideFontColor || '#D4AF37';
-    line2.style.color = settings.finalSlideFontColor || '#D4AF37';
-    line3.style.color = settings.finalSlideFontColor || '#D4AF37';
-    const fs = (settings.finalSlideFontSize || 28) + 'px';
-    line1.style.fontSize = fs;
-    line2.style.fontSize = fs;
-    line3.style.fontSize = fs;
-    line1.style.fontFamily = "'Noto Serif Sinhala', serif";
-    line2.style.fontFamily = "'Noto Serif Sinhala', serif";
-    line3.style.fontFamily = "'Noto Serif Sinhala', serif";
-    line1.style.fontWeight = '600';
-    line2.style.fontWeight = '600';
-    line3.style.fontWeight = '600';
-    line1.style.lineHeight = '1.5';
-    line2.style.lineHeight = '1.5';
-    line3.style.lineHeight = '1.5';
+  // Set up the final slide content but don't show it yet (showFinalSlide handles display)
+  line1.textContent = settings.finalSlideLine1 || '';
+  line2.textContent = settings.finalSlideLine2 || '';
+  line3.textContent = settings.finalSlideLine3 || '';
+  line1.style.color = settings.finalSlideFontColor || '#D4AF37';
+  line2.style.color = settings.finalSlideFontColor || '#D4AF37';
+  line3.style.color = settings.finalSlideFontColor || '#D4AF37';
+  const fs = (settings.finalSlideFontSize || 28) + 'px';
+  line1.style.fontSize = fs;
+  line2.style.fontSize = fs;
+  line3.style.fontSize = fs;
+  line1.style.fontFamily = "'Noto Serif Sinhala', serif";
+  line2.style.fontFamily = "'Noto Serif Sinhala', serif";
+  line3.style.fontFamily = "'Noto Serif Sinhala', serif";
+  line1.style.fontWeight = '600';
+  line2.style.fontWeight = '600';
+  line3.style.fontWeight = '600';
+  line1.style.lineHeight = '1.5';
+  line2.style.lineHeight = '1.5';
+  line3.style.lineHeight = '1.5';
+  line1.style.marginBottom = '16px';
+  line2.style.marginBottom = '16px';
+
+  // Ensure final slide is hidden by default
+  finalSlide.style.display = 'none';
   } else {
     finalSlide.style.display = 'none';
   }
 }
 
+let isOnFinalSlide = false;
+
 function showFinalSlide() {
   const finalSlide = document.getElementById('final-slide');
   const header = document.querySelector('.display-header');
   const scroller = document.querySelector('.scroller-window');
+  const footer = document.querySelector('.display-footer');
 
   // Hide all slide groups first
   slideGroups.forEach(g => {
@@ -1458,13 +1478,16 @@ function showFinalSlide() {
   });
 
   // Show final slide if enabled
-  if (settings.finalSlideEnabled && finalSlide) {
+  if (settings.finalSlideEnabled !== false && finalSlide) {
     finalSlide.style.display = 'block';
-    // Hide the main header and scroller when showing final slide
+    isOnFinalSlide = true;
+    // Hide the main header, scroller and footer when showing final slide
     if (header) header.style.display = 'none';
     if (scroller) scroller.style.display = 'none';
+    if (footer) footer.style.display = 'none';
   } else if (finalSlide) {
     finalSlide.style.display = 'none';
+    isOnFinalSlide = false;
     if (header) header.style.display = '';
     if (scroller) scroller.style.display = '';
   }
@@ -1474,12 +1497,15 @@ function showMainContent() {
   const finalSlide = document.getElementById('final-slide');
   const header = document.querySelector('.display-header');
   const scroller = document.querySelector('.scroller-window');
+  const footer = document.querySelector('.display-footer');
 
   // Hide final slide
   if (finalSlide) finalSlide.style.display = 'none';
+  isOnFinalSlide = false;
   // Show main content
   if (header) header.style.display = '';
   if (scroller) scroller.style.display = '';
+  if (footer) footer.style.display = '';
 }
 
 // ---- Admin navigation ----

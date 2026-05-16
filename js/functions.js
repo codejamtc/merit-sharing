@@ -1517,6 +1517,7 @@ let isOnFinalSlide = false;
 
 function showFinalSlide() {
   const finalSlide = document.getElementById('final-slide');
+  const finalImg = document.getElementById('final-slide-img');
   const header = document.querySelector('.display-header');
   const scroller = document.querySelector('.scroller-window');
   const footer = document.querySelector('.display-footer');
@@ -1533,6 +1534,16 @@ function showFinalSlide() {
     finalSlide.style.display = 'flex';
     finalSlide.style.flexDirection = 'column';
     finalSlide.style.justifyContent = 'center';
+    finalSlide.style.alignItems = 'center';
+
+    // Set up image when showing final slide
+    if (finalImg) {
+      const imgUrl = settings.finalSlideImageUrl || '';
+      finalImg.src = imgUrl;
+      finalImg.style.display = 'block';
+      finalImg.style.opacity = (settings.finalSlideImageOpacity !== undefined ? settings.finalSlideImageOpacity : 0.5);
+    }
+
     isOnFinalSlide = true;
     // Hide the main header, scroller and footer when showing final slide
     if (header) header.style.display = 'none';

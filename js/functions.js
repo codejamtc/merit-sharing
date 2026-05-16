@@ -56,6 +56,8 @@ let settings = {
   footerText:'කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය',
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
   hideSubtitleAfter:1, showSectionBgImage:true, showSectionDharmaWheel:true, showLogo:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
+  specialMeritText:'මහමෙව්නවා කෝට්ටේ භාවනා අසපුවේ සංඝ උපස්ථායක කුරුණෑගල රෝහනකිත්ති ස්වාමින්වහන්සේ ඇතුළු අසපුවේ වැඩ සිටින සියලු ස්වාමින්වහන්සේලත්, වැඩසටහන සදහා වැඩමකොට සිටින ස්වාමින්වහන්සේලාත් ',
+  specialMeritFontColor:'#D4AF37', specialMeritFontSize:24,
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -132,6 +134,9 @@ function exportCSV() {
     colorSectionTitle:settings.colorSectionTitle,
     colorMerit:       settings.colorMerit,
     hideSubtitleAfter:settings.hideSubtitleAfter,
+    specialMeritText:    settings.specialMeritText,
+    specialMeritFontColor: settings.specialMeritFontColor,
+    specialMeritFontSize:  settings.specialMeritFontSize,
   };
   lines.push(csvRow(['__CONFIG__', 'display', JSON.stringify(displaySettings)]));
 
@@ -1147,6 +1152,24 @@ function applyDisplaySettings() {
   set('sub2', settings.subLine2);
   set('sub3', settings.subLine3);
   set('display-footer', settings.footerText);
+
+  // Special merit text
+  const smt = document.getElementById('special-merit-display');
+  if (smt && settings.specialMeritText) {
+    smt.textContent = settings.specialMeritText;
+    smt.style.display = settings.specialMeritText.trim() ? 'block' : 'none';
+    smt.style.color = settings.specialMeritFontColor || '#D4AF37';
+    smt.style.fontSize = (settings.specialMeritFontSize || 24) + 'px';
+    smt.style.fontFamily = "'Noto Serif Sinhala', serif";
+    smt.style.fontWeight = '600';
+    smt.style.textAlign = 'center';
+    smt.style.marginTop = '16px';
+    smt.style.marginBottom = '8px';
+    smt.style.padding = '0 20px';
+    smt.style.lineHeight = '1.5';
+  } else if (smt) {
+    smt.style.display = 'none';
+  }
 }
 
 function applyColors() {
@@ -1256,6 +1279,9 @@ function populateAdmin() {
   document.getElementById('subLine3').value = settings.subLine3;
   document.getElementById('footerText').value = settings.footerText;
   document.getElementById('musicUrl').value = settings.musicUrl||'';
+  const smt=document.getElementById('specialMeritText'); if(smt) smt.value=settings.specialMeritText||'';
+  const smfc=document.getElementById('specialMeritFontColor'); if(smfc) smfc.value=settings.specialMeritFontColor||'#D4AF37';
+  const smfs=document.getElementById('specialMeritFontSize'); if(smfs){smfs.value=settings.specialMeritFontSize||24; document.getElementById('specialMeritFontSizeVal').textContent=(settings.specialMeritFontSize||24)+'px';}
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
   const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||1; updateHideSubtitle();}
   const ass=document.getElementById('autoSplitSections'); if(ass) ass.checked=settings.autoSplitSections!==false;
@@ -1299,6 +1325,9 @@ function saveAndRefresh() {
   settings.subLine2         = document.getElementById('subLine2').value;
   settings.subLine3         = document.getElementById('subLine3').value;
   settings.footerText       = document.getElementById('footerText').value;
+  settings.specialMeritText    = document.getElementById('specialMeritText')?.value || '';
+  settings.specialMeritFontColor = document.getElementById('specialMeritFontColor')?.value || '#D4AF37';
+  settings.specialMeritFontSize = parseInt(document.getElementById('specialMeritFontSize')?.value) || 24;
   settings.linesPerSlide      = parseInt(document.getElementById('linesPerSlide').value)||15;
   settings.hideSubtitleAfter  = parseInt(document.getElementById('hideSubtitleAfter').value)||0;
   const sbg=document.getElementById('showSectionBgImage'); if(sbg) settings.showSectionBgImage=sbg.checked;
@@ -1374,6 +1403,18 @@ function deleteSection(id) {
   SECTIONS = SECTIONS.filter(s=>s.id!==id);
   delete settings.sectionVisibility[id];
   saveState(); buildSectionEditors(); buildSectionToggles();
+}
+
+function moveSection(secId, direction) {
+  const idx = SECTIONS.findIndex(s => s.id === secId);
+  if (idx === -1) return;
+  const newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= SECTIONS.length) return;
+  // Swap sections
+  const temp = SECTIONS[idx];
+  SECTIONS[idx] = SECTIONS[newIdx];
+  SECTIONS[newIdx] = temp;
+  saveState(); buildSectionEditors(); buildSectionToggles(); buildScrollTrack();
 }
 
 // ---- Build admin UI ----
@@ -1635,6 +1676,22 @@ function buildSectionEditors() {
     controls.style.cssText = 'display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:10px;';
     controls.innerHTML = badge +
       `<span style="font-size:12px;color:var(--text-muted);font-family:'Noto Sans Sinhala',sans-serif;">${sec.entries.length} entries</span>`;
+
+    // Move up button
+    const upBtn = document.createElement('button');
+    upBtn.title = 'Move up';
+    upBtn.textContent = '↑';
+    upBtn.style.cssText = 'padding:4px 8px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:4px;color:var(--gold);cursor:pointer;font-size:14px;';
+    upBtn.addEventListener('click', () => moveSection(sec.id, -1));
+    controls.appendChild(upBtn);
+
+    // Move down button
+    const downBtn = document.createElement('button');
+    downBtn.title = 'Move down';
+    downBtn.textContent = '↓';
+    downBtn.style.cssText = 'padding:4px 8px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:4px;color:var(--gold);cursor:pointer;font-size:14px;';
+    downBtn.addEventListener('click', () => moveSection(sec.id, 1));
+    controls.appendChild(downBtn);
 
     const delBtn = document.createElement('button');
     delBtn.className = 'btn-delete-section';

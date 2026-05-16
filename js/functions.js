@@ -60,6 +60,11 @@ let settings = {
   specialMeritShow:true, specialMeritFontColor:'#D4AF37', specialMeritFontSize:24,
   specialMeritPaddingTop:16, specialMeritPaddingBottom:8,
   specialMeritHideAfter:0,
+  finalSlideEnabled:true,
+  finalSlideLine1:'නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්',
+  finalSlideLine2:'නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!',
+  finalSlideLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
+  finalSlideFontColor:'#D4AF37', finalSlideFontSize:28,
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -143,6 +148,12 @@ function exportCSV() {
     specialMeritPaddingTop: settings.specialMeritPaddingTop,
     specialMeritPaddingBottom: settings.specialMeritPaddingBottom,
     specialMeritHideAfter: settings.specialMeritHideAfter,
+    finalSlideEnabled: settings.finalSlideEnabled,
+    finalSlideLine1: settings.finalSlideLine1,
+    finalSlideLine2: settings.finalSlideLine2,
+    finalSlideLine3: settings.finalSlideLine3,
+    finalSlideFontColor: settings.finalSlideFontColor,
+    finalSlideFontSize: settings.finalSlideFontSize,
   };
   lines.push(csvRow(['__CONFIG__', 'display', JSON.stringify(displaySettings)]));
 
@@ -462,6 +473,7 @@ function importCSV(event) {
       applyFontScales();
       applyContentPadding();
       applyLogoVisibility();
+      applyFinalSlide();
       ttsInit();
 
       const total = SECTIONS.reduce((a,s) => a+s.entries.length, 0);
@@ -578,6 +590,12 @@ function adminSave() {
   settings.specialMeritPaddingTop = parseInt(document.getElementById('specialMeritPaddingTop')?.value) || 16;
   settings.specialMeritPaddingBottom = parseInt(document.getElementById('specialMeritPaddingBottom')?.value) || 8;
   settings.specialMeritHideAfter = parseInt(document.getElementById('specialMeritHideAfter')?.value) || 0;
+  settings.finalSlideEnabled = document.getElementById('finalSlideEnabled')?.checked ?? true;
+  settings.finalSlideLine1 = document.getElementById('finalSlideLine1')?.value || '';
+  settings.finalSlideLine2 = document.getElementById('finalSlideLine2')?.value || '';
+  settings.finalSlideLine3 = document.getElementById('finalSlideLine3')?.value || '';
+  settings.finalSlideFontColor = document.getElementById('finalSlideFontColor')?.value || '#D4AF37';
+  settings.finalSlideFontSize = parseInt(document.getElementById('finalSlideFontSize')?.value) || 28;
 
   saveState();
   applyDisplaySettings();
@@ -1249,6 +1267,12 @@ function nextSlide() {
   if (!cur) return;
   let next = currentSlide+1;
   if (next>=slideGroups.length) {
+    // Check if we should show final slide
+    if (settings.finalSlideEnabled) {
+      clearInterval(scrollTimer);
+      showFinalSlide();
+      return;
+    }
     if (!settings.autoLoop) { clearInterval(scrollTimer); return; }
     next=0;
   }
@@ -1387,6 +1411,77 @@ function toggleLogo() {
   buildScrollTrack();
 }
 
+function applyFinalSlide() {
+  const finalSlide = document.getElementById('final-slide');
+  const line1 = document.getElementById('final-slide-line1');
+  const line2 = document.getElementById('final-slide-line2');
+  const line3 = document.getElementById('final-slide-line3');
+  const header = document.querySelector('.display-header');
+
+  if (!finalSlide || !line1 || !line2 || !line3) return;
+
+  if (settings.finalSlideEnabled && settings.finalSlideLine1 && settings.finalSlideLine1.trim()) {
+    finalSlide.style.display = 'block';
+    line1.textContent = settings.finalSlideLine1 || '';
+    line2.textContent = settings.finalSlideLine2 || '';
+    line3.textContent = settings.finalSlideLine3 || '';
+    line1.style.color = settings.finalSlideFontColor || '#D4AF37';
+    line2.style.color = settings.finalSlideFontColor || '#D4AF37';
+    line3.style.color = settings.finalSlideFontColor || '#D4AF37';
+    const fs = (settings.finalSlideFontSize || 28) + 'px';
+    line1.style.fontSize = fs;
+    line2.style.fontSize = fs;
+    line3.style.fontSize = fs;
+    line1.style.fontFamily = "'Noto Serif Sinhala', serif";
+    line2.style.fontFamily = "'Noto Serif Sinhala', serif";
+    line3.style.fontFamily = "'Noto Serif Sinhala', serif";
+    line1.style.fontWeight = '600';
+    line2.style.fontWeight = '600';
+    line3.style.fontWeight = '600';
+    line1.style.lineHeight = '1.5';
+    line2.style.lineHeight = '1.5';
+    line3.style.lineHeight = '1.5';
+  } else {
+    finalSlide.style.display = 'none';
+  }
+}
+
+function showFinalSlide() {
+  const finalSlide = document.getElementById('final-slide');
+  const header = document.querySelector('.display-header');
+  const scroller = document.querySelector('.scroller-window');
+
+  // Hide all slide groups first
+  slideGroups.forEach(g => {
+    g.classList.remove('active', 'visible', 'leaving');
+    g.style.display = 'none';
+  });
+
+  // Show final slide if enabled
+  if (settings.finalSlideEnabled && finalSlide) {
+    finalSlide.style.display = 'block';
+    // Hide the main header and scroller when showing final slide
+    if (header) header.style.display = 'none';
+    if (scroller) scroller.style.display = 'none';
+  } else if (finalSlide) {
+    finalSlide.style.display = 'none';
+    if (header) header.style.display = '';
+    if (scroller) scroller.style.display = '';
+  }
+}
+
+function showMainContent() {
+  const finalSlide = document.getElementById('final-slide');
+  const header = document.querySelector('.display-header');
+  const scroller = document.querySelector('.scroller-window');
+
+  // Hide final slide
+  if (finalSlide) finalSlide.style.display = 'none';
+  // Show main content
+  if (header) header.style.display = '';
+  if (scroller) scroller.style.display = '';
+}
+
 // ---- Admin navigation ----
 function showAdmin() {
   ttsStop();
@@ -1420,6 +1515,12 @@ function populateAdmin() {
   const smpt=document.getElementById('specialMeritPaddingTop'); if(smpt){smpt.value=settings.specialMeritPaddingTop||16; document.getElementById('specialMeritPaddingTopVal').textContent=(settings.specialMeritPaddingTop||16)+'px';}
   const smpb=document.getElementById('specialMeritPaddingBottom'); if(smpb){smpb.value=settings.specialMeritPaddingBottom||8; document.getElementById('specialMeritPaddingBottomVal').textContent=(settings.specialMeritPaddingBottom||8)+'px';}
   const smha=document.getElementById('specialMeritHideAfter'); if(smha){smha.value=settings.specialMeritHideAfter||0; document.getElementById('specialMeritHideAfterVal').textContent=(settings.specialMeritHideAfter||0)==0?'Never':settings.specialMeritHideAfter;}
+  const fse=document.getElementById('finalSlideEnabled'); if(fse) fse.checked=settings.finalSlideEnabled!==false;
+  const fsl1=document.getElementById('finalSlideLine1'); if(fsl1) fsl1.value=settings.finalSlideLine1||'';
+  const fsl2=document.getElementById('finalSlideLine2'); if(fsl2) fsl2.value=settings.finalSlideLine2||'';
+  const fsl3=document.getElementById('finalSlideLine3'); if(fsl3) fsl3.value=settings.finalSlideLine3||'';
+  const fsfc=document.getElementById('finalSlideFontColor'); if(fsfc) fsfc.value=settings.finalSlideFontColor||'#D4AF37';
+  const fsfs=document.getElementById('finalSlideFontSize'); if(fsfs){fsfs.value=settings.finalSlideFontSize||28; document.getElementById('finalSlideFontSizeVal').textContent=(settings.finalSlideFontSize||28)+'px';}
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
   const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||1; updateHideSubtitle();}
   const ass=document.getElementById('autoSplitSections'); if(ass) ass.checked=settings.autoSplitSections!==false;
@@ -1470,6 +1571,12 @@ function saveAndRefresh() {
   settings.specialMeritPaddingTop = parseInt(document.getElementById('specialMeritPaddingTop')?.value) || 16;
   settings.specialMeritPaddingBottom = parseInt(document.getElementById('specialMeritPaddingBottom')?.value) || 8;
   settings.specialMeritHideAfter = parseInt(document.getElementById('specialMeritHideAfter')?.value) || 0;
+  settings.finalSlideEnabled = document.getElementById('finalSlideEnabled')?.checked ?? true;
+  settings.finalSlideLine1 = document.getElementById('finalSlideLine1')?.value || '';
+  settings.finalSlideLine2 = document.getElementById('finalSlideLine2')?.value || '';
+  settings.finalSlideLine3 = document.getElementById('finalSlideLine3')?.value || '';
+  settings.finalSlideFontColor = document.getElementById('finalSlideFontColor')?.value || '#D4AF37';
+  settings.finalSlideFontSize = parseInt(document.getElementById('finalSlideFontSize')?.value) || 28;
   settings.linesPerSlide      = parseInt(document.getElementById('linesPerSlide').value)||15;
   settings.hideSubtitleAfter  = parseInt(document.getElementById('hideSubtitleAfter').value)||0;
   const sbg=document.getElementById('showSectionBgImage'); if(sbg) settings.showSectionBgImage=sbg.checked;
@@ -1501,7 +1608,7 @@ function saveAndRefresh() {
     const cb=document.getElementById('toggle-'+sec.id);
     if (cb) settings.sectionVisibility[sec.id]=cb.checked;
   });
-  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales(); applyContentPadding(); applyLogoVisibility();
+  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales(); applyContentPadding(); applyLogoVisibility(); applyFinalSlide();
 }
 
 function collectEditorData() {
@@ -2150,5 +2257,6 @@ applySectionBgImage();
 applyFontScales();
 applyContentPadding();
 applyLogoVisibility();
+applyFinalSlide();
 applyMusic();
 ttsInit();

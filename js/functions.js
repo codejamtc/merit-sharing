@@ -55,7 +55,7 @@ let settings = {
   subLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
   footerText:'කෝට්ටේ මහමෙව්නාව ඉංග්‍රීසි දහම් මධ්‍යස්ථානය',
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
-  hideSubtitleAfter:1, showSectionBgImage:true, showSectionDharmaWheel:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
+  hideSubtitleAfter:1, showSectionBgImage:true, showSectionDharmaWheel:true, showLogo:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -145,6 +145,7 @@ function exportCSV() {
     hideSubtitleAfter:  settings.hideSubtitleAfter,
     showSectionBgImage: settings.showSectionBgImage,
     showSectionDharmaWheel: settings.showSectionDharmaWheel,
+    showLogo: settings.showLogo,
   };
   lines.push(csvRow(['__CONFIG__', 'scroll', JSON.stringify(scrollSettings)]));
 
@@ -341,6 +342,7 @@ function importCSV(event) {
       applySectionBgImage();
       applyFontScales();
       applyContentPadding();
+      applyLogoVisibility();
       ttsInit();
 
       const total = SECTIONS.reduce((a,s) => a+s.entries.length, 0);
@@ -1210,6 +1212,24 @@ function applyContentPadding() {
   root.style.setProperty('--content-padding-x', p);
 }
 
+function applyLogoVisibility() {
+  const logoRow = document.querySelector('.logo-row');
+  if (logoRow) {
+    if (settings.showLogo === false) {
+      logoRow.classList.add('logo-hidden');
+    } else {
+      logoRow.classList.remove('logo-hidden');
+    }
+  }
+}
+
+function toggleLogo() {
+  const cb = document.getElementById('showLogo');
+  settings.showLogo = cb ? cb.checked : true;
+  applyLogoVisibility();
+  buildScrollTrack();
+}
+
 // ---- Admin navigation ----
 function showAdmin() {
   ttsStop();
@@ -1243,6 +1263,7 @@ function populateAdmin() {
   if(mfStatus && localMusicBlobUrl && settings.musicUrl && settings.musicUrl.startsWith('(local:')) mfStatus.textContent='✓ '+settings.musicUrl.slice(7,settings.musicUrl.length-1)+' (loaded in memory)';
   const sbg2=document.getElementById('showSectionBgImage'); if(sbg2) sbg2.checked=settings.showSectionBgImage!==false;
   const sdw=document.getElementById('showSectionDharmaWheel'); if(sdw) sdw.checked=settings.showSectionDharmaWheel!==false;
+  const sl=document.getElementById('showLogo'); if(sl) sl.checked=settings.showLogo!==false;
   const ct=document.getElementById('colorTitle');         if(ct)  ct.value=settings.colorTitle||'#D4AF37';
   const cs=document.getElementById('colorSubtitle');      if(cs)  cs.value=settings.colorSubtitle||'#C8A96E';
   const cst=document.getElementById('colorSectionTitle'); if(cst) cst.value=settings.colorSectionTitle||'#F0D060';
@@ -1282,6 +1303,7 @@ function saveAndRefresh() {
   settings.hideSubtitleAfter  = parseInt(document.getElementById('hideSubtitleAfter').value)||0;
   const sbg=document.getElementById('showSectionBgImage'); if(sbg) settings.showSectionBgImage=sbg.checked;
   const sdw=document.getElementById('showSectionDharmaWheel'); if(sdw) settings.showSectionDharmaWheel=sdw.checked;
+  const sl=document.getElementById('showLogo'); if(sl) settings.showLogo=sl.checked;
   // sectionIconHidden is updated live via toggleSectionIcon(), no extra read needed
   settings.ttsEnabled   = document.getElementById('ttsEnabled')?.checked ?? false;
   settings.ttsRate      = parseFloat(document.getElementById('ttsRateSlider')?.value || 0.85);
@@ -1308,7 +1330,7 @@ function saveAndRefresh() {
     const cb=document.getElementById('toggle-'+sec.id);
     if (cb) settings.sectionVisibility[sec.id]=cb.checked;
   });
-  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales(); applyContentPadding();
+  saveState(); autoExportHint(); applyDisplaySettings(); applyColors(); applyMusic(); buildScrollTrack(); applySectionBgImage(); applyFontScales(); applyContentPadding(); applyLogoVisibility();
 }
 
 function collectEditorData() {
@@ -1928,5 +1950,6 @@ buildScrollTrack();
 applySectionBgImage();
 applyFontScales();
 applyContentPadding();
+applyLogoVisibility();
 applyMusic();
 ttsInit();

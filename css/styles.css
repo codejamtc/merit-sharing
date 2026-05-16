@@ -26,6 +26,7 @@ body{font-family:'Noto Serif Sinhala',serif;background:var(--deep);color:var(--t
 .display-header{text-align:center;padding:44px 24px 16px;position:relative;z-index:2;width:100%;max-width:1400px;}
 
 .logo-row{display:flex;align-items:center;justify-content:center;gap:32px;margin-bottom:24px;}
+.logo-hidden{display:none;}
 .org-logo{width:min(240px,34vw);height:auto;display:block;}
 .chakka-img{width:min(110px,15vw);height:auto;display:block;
   animation:spinWheel 14s linear infinite;

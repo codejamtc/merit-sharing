@@ -64,7 +64,7 @@ let settings = {
   finalSlideLine1:'නිවනට බීජයක් බඳු වූ, ඔබ රැස් කරගත් මෙම උදාරතර භූමි පූජාමය පුණ්‍ය සම්භාරයෙන්, ඔබත් ඔබගේ පවුලේ සියලු දෙනාත්',
   finalSlideLine2:'නිදුක් වෙත්වා..! නිරෝගී වෙත්වා..! සුවපත් වෙත්වා..! දීර්ඝායුෂ ලබත්වා...!',
   finalSlideLine3:'උතුම් චතුරාර්ය සත්‍යය අවබෝධය පිණිසම හේතු වාසනා වේවා!',
-  finalSlideFontColor:'#D4AF37', finalSlideFontSize:28,
+  finalSlideFontColor:'#D4AF37', finalSlideFontSize:28, finalSlideImageUrl:'https://github.com/codejamtc/merit-sharing/blob/develop/assets/img/last-slde.png', finalSlideImageOpacity:0.5,
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:true,
@@ -155,6 +155,8 @@ function exportCSV() {
     finalSlideLine3: settings.finalSlideLine3,
     finalSlideFontColor: settings.finalSlideFontColor,
     finalSlideFontSize: settings.finalSlideFontSize,
+    finalSlideImageUrl: settings.finalSlideImageUrl,
+    finalSlideImageOpacity: settings.finalSlideImageOpacity,
   };
   lines.push(csvRow(['__CONFIG__', 'display', JSON.stringify(displaySettings)]));
 
@@ -1428,6 +1430,7 @@ function applyFinalSlide() {
   const line1 = document.getElementById('final-slide-line1');
   const line2 = document.getElementById('final-slide-line2');
   const line3 = document.getElementById('final-slide-line3');
+  const finalImg = document.getElementById('final-slide-img');
 
   if (!finalSlide || !line1 || !line2 || !line3) return;
 
@@ -1453,6 +1456,13 @@ function applyFinalSlide() {
   line3.style.lineHeight = '1.5';
   line1.style.marginBottom = '16px';
   line2.style.marginBottom = '16px';
+
+  // Set up final slide image
+  if (finalImg) {
+    const imgUrl = settings.finalSlideImageUrl || '';
+    finalImg.src = imgUrl;
+    finalImg.style.opacity = (settings.finalSlideImageOpacity !== undefined ? settings.finalSlideImageOpacity : 0.5);
+  }
 
   // Ensure final slide is hidden by default
   finalSlide.style.display = 'none';
@@ -1545,6 +1555,8 @@ function populateAdmin() {
   const fsl3=document.getElementById('finalSlideLine3'); if(fsl3) fsl3.value=settings.finalSlideLine3||'';
   const fsfc=document.getElementById('finalSlideFontColor'); if(fsfc) fsfc.value=settings.finalSlideFontColor||'#D4AF37';
   const fsfs=document.getElementById('finalSlideFontSize'); if(fsfs){fsfs.value=settings.finalSlideFontSize||28; document.getElementById('finalSlideFontSizeVal').textContent=(settings.finalSlideFontSize||28)+'px';}
+  const fsimg=document.getElementById('finalSlideImageUrl'); if(fsimg) fsimg.value=settings.finalSlideImageUrl||'';
+  const fsiop=document.getElementById('finalSlideImageOpacity'); if(fsiop){fsiop.value=(settings.finalSlideImageOpacity!==undefined?settings.finalSlideImageOpacity:0.5)*100; document.getElementById('finalSlideImageOpacityVal').textContent=Math.round((settings.finalSlideImageOpacity!==undefined?settings.finalSlideImageOpacity:0.5)*100)+'%';}
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
   const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||1; updateHideSubtitle();}
   const smEn=document.getElementById('slideManagerEnabled'); if(smEn) smEn.checked=settings.slideManagerEnabled!==false;
@@ -1602,6 +1614,8 @@ function saveAndRefresh() {
   settings.finalSlideLine3 = document.getElementById('finalSlideLine3')?.value || '';
   settings.finalSlideFontColor = document.getElementById('finalSlideFontColor')?.value || '#D4AF37';
   settings.finalSlideFontSize = parseInt(document.getElementById('finalSlideFontSize')?.value) || 28;
+  settings.finalSlideImageUrl = document.getElementById('finalSlideImageUrl')?.value || '';
+  settings.finalSlideImageOpacity = (parseInt(document.getElementById('finalSlideImageOpacity')?.value) || 50) / 100;
   settings.linesPerSlide      = parseInt(document.getElementById('linesPerSlide').value)||15;
   settings.hideSubtitleAfter  = parseInt(document.getElementById('hideSubtitleAfter').value)||0;
   const sbg=document.getElementById('showSectionBgImage'); if(sbg) settings.showSectionBgImage=sbg.checked;

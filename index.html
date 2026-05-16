@@ -40,6 +40,7 @@
   </div>
 
   <div id="final-slide" style="display:none;text-align:center;padding:20px 40px;">
+    <img id="final-slide-img" src="" alt="" style="max-width:100%;height:auto;margin-bottom:20px;object-fit:contain;">
     <div id="final-slide-line1" style="margin-bottom:16px;"></div>
     <div id="final-slide-line2" style="margin-bottom:16px;"></div>
     <div id="final-slide-line3"></div>
@@ -360,6 +361,15 @@
             <label class="field-label" style="margin:0;">Font Size:</label>
             <input type="range" id="finalSlideFontSize" min="12" max="48" value="28" style="width:120px;" oninput="document.getElementById('finalSlideFontSizeVal').textContent=this.value+'px'">
             <span id="finalSlideFontSizeVal" style="color:var(--gold);font-size:14px;min-width:40px;">28px</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label class="field-label" style="margin:0;">Image URL:</label>
+            <input type="text" id="finalSlideImageUrl" value="" style="width:200px;padding:4px 8px;border:1px solid rgba(212,175,55,.3);border-radius:4px;">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label class="field-label" style="margin:0;">Image Opacity:</label>
+            <input type="range" id="finalSlideImageOpacity" min="0" max="100" value="50" style="width:80px;" oninput="document.getElementById('finalSlideImageOpacityVal').textContent=this.value+'%'">
+            <span id="finalSlideImageOpacityVal" style="color:var(--gold);font-size:14px;min-width:40px;">50%</span>
           </div>
         </div>
       </div>

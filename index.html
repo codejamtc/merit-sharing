@@ -505,6 +505,21 @@
         </p>
         <button class="btn-secondary" onclick="clearStorage()" style="background:rgba(200,80,80,.1);border-color:rgba(200,80,80,.3);color:#cc6666;">🗑️ Clear All Data</button>
       </div>
+      <div class="admin-card" style="grid-column:1/-1;">
+        <h3>📦 JSON Backup &amp; Restore</h3>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;font-family:'Noto Sans Sinhala',sans-serif;">
+          Save current data and configuration to a JSON file, or load from a previously saved JSON backup.
+          JSON files include all data and settings in a structured format.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn-export" onclick="exportJSON()">💾 Save to JSON</button>
+          <label class="btn-import-label" style="display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:8px;cursor:pointer;transition:all .2s;">
+            📂 Load from JSON
+            <input type="file" id="importJsonFile" accept=".json" onchange="importJSON(event)" style="display:none;">
+          </label>
+        </div>
+        <span id="json-status" style="font-size:12px;color:var(--text-muted);margin-left:12px;font-family:'Noto Sans Sinhala',sans-serif;"></span>
+      </div>
     </div>
   </div>
 

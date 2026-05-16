@@ -203,6 +203,114 @@ function exportCSV() {
   setCsvStatus('✓ Exported data + full configuration', true);
 }
 
+function exportJSON() {
+  // Gather all data and settings into a JSON object
+  const data = {
+    version: '2.5',
+    exportedAt: new Date().toISOString(),
+    settings: {...settings},
+    sections: SECTIONS.map(s => ({
+      id: s.id,
+      title: s.title,
+      entries: s.entries,
+      custom: s.custom || false
+    }))
+  };
+
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type: 'application/json;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'poya_merit_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  setJsonStatus('✓ Exported all data to JSON', true);
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.settings || !data.sections) {
+        throw new Error('Invalid JSON format');
+      }
+
+      // Restore settings
+      settings = {...settings, ...data.settings};
+
+      // Restore sections
+      SECTIONS = data.sections.map(s => ({
+        id: s.id,
+        title: s.title || s.id,
+        entries: s.entries || [],
+        custom: s.custom || false
+      }));
+
+      // Ensure all default sections exist
+      DEFAULT_SECTIONS.forEach(def => {
+        if (!SECTIONS.find(s => s.id === def.id)) {
+          SECTIONS.push({id: def.id, title: def.title, entries: [], custom: false});
+        }
+      });
+
+      // Ensure visibility keys exist
+      SECTIONS.forEach(s => {
+        if (settings.sectionVisibility[s.id] === undefined)
+          settings.sectionVisibility[s.id] = true;
+      });
+
+      // Initialize background images if needed
+      if (!settings.sectionBgImage) settings.sectionBgImage = {};
+      if (!settings.sectionBgImageEnabled) settings.sectionBgImageEnabled = {};
+      if (!settings.sectionBgImageOpacity) settings.sectionBgImageOpacity = {};
+
+      Object.keys(DEFAULT_BG_IMAGES).forEach(secId => {
+        if (!settings.sectionBgImage[secId]) {
+          settings.sectionBgImage[secId] = DEFAULT_BG_IMAGES[secId];
+          settings.sectionBgImageEnabled[secId] = true;
+        }
+        if (settings.sectionBgImageOpacity[secId] === undefined) {
+          settings.sectionBgImageOpacity[secId] = 0.2;
+        }
+      });
+
+      // Save and apply everything
+      saveState();
+      applyDisplaySettings();
+      applyColors();
+      applyMusic();
+      populateAdmin();
+      buildSectionToggles();
+      buildSectionEditors();
+      buildSectionBgImages();
+      buildScrollTrack();
+      applySectionBgImage();
+      applyFontScales();
+      applyContentPadding();
+      applyLogoVisibility();
+      ttsInit();
+
+      setJsonStatus('✓ Loaded data from JSON', true);
+    } catch(err) {
+      setJsonStatus('✗ Error: ' + err.message, false);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function setJsonStatus(msg, ok) {
+  const el = document.getElementById('json-status');
+  if (el) {
+    el.textContent = msg;
+    el.style.color = ok ? '#8dcc55' : '#cc4444';
+  }
+}
+
 function importCSV(event) {
   const file = event.target.files[0];
   if (!file) return;

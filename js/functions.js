@@ -77,7 +77,7 @@ let settings = {
     {label:'Slide 6', sectionIds:['s12']},
     {label:'Slide 7', sectionIds:['s13']}
   ],
-  sectionRowLimits:{s11:12, s12:12, s13:5},   // {secId: maxNamesPerSlide}
+  sectionRowLimits:{s10:12, s11:12, s12:12, s13:5},   // {secId: maxNamesPerSlide}
   fontScaleTitle:1, fontScaleSubtitle:1, fontScaleSection:1, fontScaleName:1, fontScaleMerit:1,
   contentPaddingX:1,
 };
@@ -1124,9 +1124,12 @@ function splitSectionIntoChunks(sec, maxLines) {
   const nameOnly = NAME_ONLY_IDS.includes(sec.id) || sec.nameOnly;
 
   // Per-section row limit overrides global lines budget for any section that has it set
-  const perSecLimit = (settings.sectionRowLimits && settings.sectionRowLimits[sec.id])
-    ? parseInt(settings.sectionRowLimits[sec.id])
-    : null;
+  // For nameOnly (2-column) sections, the setting is total names, so divide by 2 for per-column limit
+  let perSecLimit = null;
+  if (settings.sectionRowLimits && settings.sectionRowLimits[sec.id]) {
+    const rawLimit = parseInt(settings.sectionRowLimits[sec.id]);
+    perSecLimit = nameOnly ? Math.floor(rawLimit / 2) : rawLimit;
+  }
 
   const chunks = [];
   let chunk = [];

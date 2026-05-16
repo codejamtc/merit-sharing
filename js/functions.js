@@ -1181,7 +1181,49 @@ function buildScrollTrack() {
       const group = slideConf.sectionIds
         .map(id => SECTIONS.find(s => s.id === id))
         .filter(sec => sec && sec.entries.length > 0 && settings.sectionVisibility[sec.id] !== false);
-      if (group.length) slides.push(group);
+
+      if (group.length) {
+        // Check if any section in this group has a row limit
+        const hasRowLimits = group.some(sec => settings.sectionRowLimits && settings.sectionRowLimits[sec.id]);
+
+        if (!hasRowLimits) {
+          // No row limits - all sections go on one slide
+          slides.push(group);
+        } else {
+          // Has row limits - process each section sequentially
+          // For sections with limits: each chunk gets its own slide
+          // For sections without limits: combined into last slide
+          const limitedSections = [];
+          const normalSections = [];
+
+          group.forEach(sec => {
+            if (settings.sectionRowLimits && settings.sectionRowLimits[sec.id]) {
+              limitedSections.push(sec);
+            } else {
+              normalSections.push(sec);
+            }
+          });
+
+          // Process sections with row limits - each chunk gets a slide
+          limitedSections.forEach(sec => {
+            const chunks = splitSectionIntoChunks(sec, 1000);
+            // First N-1 chunks: only that section
+            // Last chunk: includes normal sections too
+            chunks.forEach((chunk, idx) => {
+              if (idx < chunks.length - 1) {
+                slides.push([chunk]);
+              } else {
+                slides.push([chunk, ...normalSections]);
+              }
+            });
+          });
+
+          // If there were no limited sections but there are normal sections
+          if (limitedSections.length === 0 && normalSections.length > 0) {
+            slides.push(normalSections);
+          }
+        }
+      }
     });
     // Append any visible sections not assigned to any slide
     const assigned = settings.slideManagerConfig.flatMap(s => s.sectionIds);
@@ -1749,6 +1791,7 @@ function buildSectionRowLimitsUI() {
     numIn.max = 200;
     numIn.style.cssText = 'width:70px;margin-bottom:0;text-align:center;';
     numIn.title = '0 = use global setting';
+    numIn.onchange = saveRowLimitsAndApply;
 
     const hint = document.createElement('span');
     hint.style.cssText = 'font-size:11px;color:var(--text-muted);font-family:sans-serif;white-space:nowrap;';

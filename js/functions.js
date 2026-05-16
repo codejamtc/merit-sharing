@@ -462,7 +462,17 @@ function adminSave() {
   const smEnabled = document.getElementById('slideManagerEnabled');
   if (smEnabled) settings.slideManagerEnabled = smEnabled.checked;
 
+  // Save special merit text settings
+  settings.specialMeritText = document.getElementById('specialMeritText')?.value || '';
+  settings.specialMeritShow = document.getElementById('specialMeritShow')?.checked ?? true;
+  settings.specialMeritFontColor = document.getElementById('specialMeritFontColor')?.value || '#D4AF37';
+  settings.specialMeritFontSize = parseInt(document.getElementById('specialMeritFontSize')?.value) || 24;
+  settings.specialMeritPaddingTop = parseInt(document.getElementById('specialMeritPaddingTop')?.value) || 16;
+  settings.specialMeritPaddingBottom = parseInt(document.getElementById('specialMeritPaddingBottom')?.value) || 8;
+  settings.specialMeritHideAfter = parseInt(document.getElementById('specialMeritHideAfter')?.value) || 0;
+
   saveState();
+  applyDisplaySettings();
   buildScrollTrack();
   setCsvStatus('✓ All changes saved', true);
 }

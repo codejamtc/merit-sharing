@@ -57,7 +57,9 @@ let settings = {
   colorTitle:'#D4AF37', colorSubtitle:'#C8A96E', colorSectionTitle:'#F0D060', colorMerit:'#C8A96E',
   hideSubtitleAfter:1, showSectionBgImage:true, showSectionDharmaWheel:true, showLogo:true, sectionIconHidden:{}, sectionBgImage:{}, sectionBgImageEnabled:{}, sectionBgImageOpacity:{},
   specialMeritText:'මහමෙව්නවා කෝට්ටේ භාවනා අසපුවේ සංඝ උපස්ථායක කුරුණෑගල රෝහනකිත්ති ස්වාමින්වහන්සේ ඇතුළු අසපුවේ වැඩ සිටින සියලු ස්වාමින්වහන්සේලත්, වැඩසටහන සදහා වැඩමකොට සිටින ස්වාමින්වහන්සේලාත් ',
-  specialMeritFontColor:'#D4AF37', specialMeritFontSize:24,
+  specialMeritShow:true, specialMeritFontColor:'#D4AF37', specialMeritFontSize:24,
+  specialMeritPaddingTop:16, specialMeritPaddingBottom:8,
+  specialMeritHideAfter:0,
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
   slideManagerEnabled:false,
@@ -135,8 +137,12 @@ function exportCSV() {
     colorMerit:       settings.colorMerit,
     hideSubtitleAfter:settings.hideSubtitleAfter,
     specialMeritText:    settings.specialMeritText,
+    specialMeritShow: settings.specialMeritShow,
     specialMeritFontColor: settings.specialMeritFontColor,
     specialMeritFontSize:  settings.specialMeritFontSize,
+    specialMeritPaddingTop: settings.specialMeritPaddingTop,
+    specialMeritPaddingBottom: settings.specialMeritPaddingBottom,
+    specialMeritHideAfter: settings.specialMeritHideAfter,
   };
   lines.push(csvRow(['__CONFIG__', 'display', JSON.stringify(displaySettings)]));
 
@@ -1111,6 +1117,13 @@ function showSlide(idx, instant) {
     subsEl.style.opacity   = shouldHide ? '0' : '';
     subsEl.style.marginBottom = shouldHide ? '0' : '';
   }
+  // Hide/show special merit text based on slide index
+  const smHideAfter = settings.specialMeritHideAfter || 0;
+  const smtEl = document.getElementById('special-merit-display');
+  if (smtEl) {
+    const shouldHideSm = (smHideAfter > 0 && idx >= smHideAfter);
+    smtEl.style.display = shouldHideSm ? 'none' : (settings.specialMeritShow !== false && settings.specialMeritText && settings.specialMeritText.trim() ? 'block' : 'none');
+  }
 }
 
 function nextSlide() {
@@ -1155,20 +1168,23 @@ function applyDisplaySettings() {
 
   // Special merit text
   const smt = document.getElementById('special-merit-display');
-  if (smt && settings.specialMeritText) {
-    smt.textContent = settings.specialMeritText;
-    smt.style.display = settings.specialMeritText.trim() ? 'block' : 'none';
-    smt.style.color = settings.specialMeritFontColor || '#D4AF37';
-    smt.style.fontSize = (settings.specialMeritFontSize || 24) + 'px';
-    smt.style.fontFamily = "'Noto Serif Sinhala', serif";
-    smt.style.fontWeight = '600';
-    smt.style.textAlign = 'center';
-    smt.style.marginTop = '16px';
-    smt.style.marginBottom = '8px';
-    smt.style.padding = '0 20px';
-    smt.style.lineHeight = '1.5';
-  } else if (smt) {
-    smt.style.display = 'none';
+  const showSpecialMerit = settings.specialMeritShow !== false && settings.specialMeritText && settings.specialMeritText.trim();
+  if (smt) {
+    if (showSpecialMerit) {
+      smt.textContent = settings.specialMeritText;
+      smt.style.display = 'block';
+      smt.style.color = settings.specialMeritFontColor || '#D4AF37';
+      smt.style.fontSize = (settings.specialMeritFontSize || 24) + 'px';
+      smt.style.fontFamily = "'Noto Serif Sinhala', serif";
+      smt.style.fontWeight = '600';
+      smt.style.textAlign = 'center';
+      smt.style.marginTop = (settings.specialMeritPaddingTop || 16) + 'px';
+      smt.style.marginBottom = (settings.specialMeritPaddingBottom || 8) + 'px';
+      smt.style.padding = '0 20px';
+      smt.style.lineHeight = '1.5';
+    } else {
+      smt.style.display = 'none';
+    }
   }
 }
 
@@ -1282,6 +1298,10 @@ function populateAdmin() {
   const smt=document.getElementById('specialMeritText'); if(smt) smt.value=settings.specialMeritText||'';
   const smfc=document.getElementById('specialMeritFontColor'); if(smfc) smfc.value=settings.specialMeritFontColor||'#D4AF37';
   const smfs=document.getElementById('specialMeritFontSize'); if(smfs){smfs.value=settings.specialMeritFontSize||24; document.getElementById('specialMeritFontSizeVal').textContent=(settings.specialMeritFontSize||24)+'px';}
+  const smsh=document.getElementById('specialMeritShow'); if(smsh) smsh.checked=settings.specialMeritShow!==false;
+  const smpt=document.getElementById('specialMeritPaddingTop'); if(smpt){smpt.value=settings.specialMeritPaddingTop||16; document.getElementById('specialMeritPaddingTopVal').textContent=(settings.specialMeritPaddingTop||16)+'px';}
+  const smpb=document.getElementById('specialMeritPaddingBottom'); if(smpb){smpb.value=settings.specialMeritPaddingBottom||8; document.getElementById('specialMeritPaddingBottomVal').textContent=(settings.specialMeritPaddingBottom||8)+'px';}
+  const smha=document.getElementById('specialMeritHideAfter'); if(smha){smha.value=settings.specialMeritHideAfter||0; document.getElementById('specialMeritHideAfterVal').textContent=(settings.specialMeritHideAfter||0)==0?'Never':settings.specialMeritHideAfter;}
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
   const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||1; updateHideSubtitle();}
   const ass=document.getElementById('autoSplitSections'); if(ass) ass.checked=settings.autoSplitSections!==false;
@@ -1328,6 +1348,10 @@ function saveAndRefresh() {
   settings.specialMeritText    = document.getElementById('specialMeritText')?.value || '';
   settings.specialMeritFontColor = document.getElementById('specialMeritFontColor')?.value || '#D4AF37';
   settings.specialMeritFontSize = parseInt(document.getElementById('specialMeritFontSize')?.value) || 24;
+  settings.specialMeritShow = document.getElementById('specialMeritShow')?.checked ?? true;
+  settings.specialMeritPaddingTop = parseInt(document.getElementById('specialMeritPaddingTop')?.value) || 16;
+  settings.specialMeritPaddingBottom = parseInt(document.getElementById('specialMeritPaddingBottom')?.value) || 8;
+  settings.specialMeritHideAfter = parseInt(document.getElementById('specialMeritHideAfter')?.value) || 0;
   settings.linesPerSlide      = parseInt(document.getElementById('linesPerSlide').value)||15;
   settings.hideSubtitleAfter  = parseInt(document.getElementById('hideSubtitleAfter').value)||0;
   const sbg=document.getElementById('showSectionBgImage'); if(sbg) settings.showSectionBgImage=sbg.checked;

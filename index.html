@@ -72,9 +72,16 @@
     <!-- Special Merit Text -->
     <div class="admin-card" style="margin-bottom:20px;">
       <h3>📜 Special Merit Sharing Text</h3>
+      <div class="section-toggle-row" style="border:none;padding:0;margin-bottom:12px;">
+        <span class="toggle-label">Show Special Merit Text</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="specialMeritShow" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
       <label class="field-label">Name list or special merit sharing (shown at top of display)</label>
       <textarea id="specialMeritText" rows="3" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.25);border-radius:6px;color:var(--text-main);padding:10px 12px;font-size:14px;font-family:'Noto Sans Sinhala',sans-serif;resize:vertical;" placeholder="Enter special merit sharing text..."></textarea>
-      <div style="display:flex;gap:20px;margin-top:12px;align-items:center;">
+      <div style="display:flex;gap:20px;margin-top:12px;align-items:center;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:8px;">
           <label class="field-label" style="margin:0;">Font Color:</label>
           <input type="color" id="specialMeritFontColor" value="#D4AF37" style="width:40px;height:30px;cursor:pointer;border:1px solid rgba(212,175,55,.3);border-radius:4px;">
@@ -83,6 +90,23 @@
           <label class="field-label" style="margin:0;">Font Size:</label>
           <input type="range" id="specialMeritFontSize" min="12" max="48" value="24" style="width:120px;" oninput="document.getElementById('specialMeritFontSizeVal').textContent=this.value+'px'">
           <span id="specialMeritFontSizeVal" style="color:var(--gold);font-size:14px;min-width:40px;">24px</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;margin-top:12px;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label class="field-label" style="margin:0;">Top Padding:</label>
+          <input type="range" id="specialMeritPaddingTop" min="0" max="48" value="16" style="width:100px;" oninput="document.getElementById('specialMeritPaddingTopVal').textContent=this.value+'px'">
+          <span id="specialMeritPaddingTopVal" style="color:var(--gold);font-size:14px;min-width:40px;">16px</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label class="field-label" style="margin:0;">Bottom Padding:</label>
+          <input type="range" id="specialMeritPaddingBottom" min="0" max="48" value="8" style="width:100px;" oninput="document.getElementById('specialMeritPaddingBottomVal').textContent=this.value+'px'">
+          <span id="specialMeritPaddingBottomVal" style="color:var(--gold);font-size:14px;min-width:40px;">8px</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label class="field-label" style="margin:0;">Hide after slide #:</label>
+          <input type="range" id="specialMeritHideAfter" min="0" max="20" value="0" style="width:100px;" oninput="document.getElementById('specialMeritHideAfterVal').textContent=this.value==0?'Never':this.value">
+          <span id="specialMeritHideAfterVal" style="color:var(--gold);font-size:14px;min-width:50px;">Never</span>
         </div>
       </div>
     </div>

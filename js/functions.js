@@ -67,16 +67,17 @@ let settings = {
   finalSlideFontColor:'#D4AF37', finalSlideFontSize:28,
   ttsEnabled:false, ttsRate:0.85, ttsPitch:1.0, ttsVoiceURI:'', ttsGender:'female', ttsVolume:1.0, ttsReadMerit:true,
   autoSplitSections:true,
-  slideManagerEnabled:false,
+  slideManagerEnabled:true,
   slideManagerConfig:[
     {label:'Slide 1', sectionIds:['s1','s2']},
     {label:'Slide 2', sectionIds:['s3','s4','s5']},
     {label:'Slide 3', sectionIds:['s6','s7','s8']},
-    {label:'Slide 4', sectionIds:['s9','s10','s11']},
-    {label:'Slide 5', sectionIds:['s12']},
-    {label:'Slide 6', sectionIds:['s13']}
+    {label:'Slide 4', sectionIds:['s9','s10']},
+    {label:'Slide 5', sectionIds:['s11']},
+    {label:'Slide 6', sectionIds:['s12']},
+    {label:'Slide 7', sectionIds:['s13']}
   ],
-  sectionRowLimits:{},   // {secId: maxNamesPerSlide}
+  sectionRowLimits:{s11:12, s12:12, s13:5},   // {secId: maxNamesPerSlide}
   fontScaleTitle:1, fontScaleSubtitle:1, fontScaleSection:1, fontScaleName:1, fontScaleMerit:1,
   contentPaddingX:1,
 };
@@ -1546,6 +1547,7 @@ function populateAdmin() {
   const fsfs=document.getElementById('finalSlideFontSize'); if(fsfs){fsfs.value=settings.finalSlideFontSize||28; document.getElementById('finalSlideFontSizeVal').textContent=(settings.finalSlideFontSize||28)+'px';}
   const lps=document.getElementById('linesPerSlide'); if(lps) lps.value=settings.linesPerSlide||15;
   const hsa=document.getElementById('hideSubtitleAfter'); if(hsa){hsa.value=settings.hideSubtitleAfter||1; updateHideSubtitle();}
+  const smEn=document.getElementById('slideManagerEnabled'); if(smEn) smEn.checked=settings.slideManagerEnabled!==false;
   const ass=document.getElementById('autoSplitSections'); if(ass) ass.checked=settings.autoSplitSections!==false;
   const mfStatus=document.getElementById('music-file-status');
   if(mfStatus && localMusicBlobUrl && settings.musicUrl && settings.musicUrl.startsWith('(local:')) mfStatus.textContent='✓ '+settings.musicUrl.slice(7,settings.musicUrl.length-1)+' (loaded in memory)';

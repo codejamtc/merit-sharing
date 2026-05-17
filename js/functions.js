@@ -1486,6 +1486,10 @@ function applyFinalSlide() {
   line1.style.color = settings.finalSlideFontColor || '#D4AF37';
   line2.style.color = settings.finalSlideFontColor || '#D4AF37';
   line3.style.color = settings.finalSlideFontColor || '#D4AF37';
+  // Add text shadow for visibility against background
+  line1.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
+  line2.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
+  line3.style.textShadow = '0 2px 4px rgba(0,0,0,0.8)';
   const fs = (settings.finalSlideFontSize || 28) + 'px';
   line1.style.fontSize = fs;
   line2.style.fontSize = fs;
@@ -1536,12 +1540,21 @@ function showFinalSlide() {
     finalSlide.style.justifyContent = 'center';
     finalSlide.style.alignItems = 'center';
 
-    // Set up image when showing final slide
+    // Set background image with overlay to control opacity while keeping text visible
+    const imgUrl = settings.finalSlideImageUrl || '';
+    const opacity = settings.finalSlideImageOpacity !== undefined ? settings.finalSlideImageOpacity : 0.5;
+    if (imgUrl) {
+      finalSlide.style.backgroundImage = `url('${imgUrl}')`;
+      finalSlide.style.backgroundSize = 'cover';
+      finalSlide.style.backgroundPosition = 'center';
+      finalSlide.style.backgroundRepeat = 'no-repeat';
+      // Add dark overlay with opacity so text remains visible
+      finalSlide.style.backgroundColor = `rgba(0,0,0,${opacity * 0.8})`;
+    }
+
+    // Hide the inline img since we're using background
     if (finalImg) {
-      const imgUrl = settings.finalSlideImageUrl || '';
-      finalImg.src = imgUrl;
-      finalImg.style.display = 'block';
-      finalImg.style.opacity = (settings.finalSlideImageOpacity !== undefined ? settings.finalSlideImageOpacity : 0.5);
+      finalImg.style.display = 'none';
     }
 
     isOnFinalSlide = true;
@@ -1551,6 +1564,8 @@ function showFinalSlide() {
     if (footer) footer.style.display = 'none';
   } else if (finalSlide) {
     finalSlide.style.display = 'none';
+    finalSlide.style.backgroundImage = '';
+    finalSlide.style.backgroundColor = '';
     isOnFinalSlide = false;
     if (header) header.style.display = '';
     if (scroller) scroller.style.display = '';
